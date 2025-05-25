@@ -1,0 +1,601 @@
+User Registration
+
+-- Check if user already exists
+SELECT * FROM users 
+WHERE username = ? OR email = ? OR mobile_no = ? OR aadhar_number = ?;
+
+-- Insert new user
+INSERT INTO users (username, password, user_id, full_name, date_of_birth, mobile_no, email, address, aadhar_number, PAN_number, role, branch_id, created_at, updated_at)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW());
+
+
+
+User Login
+
+-- Find user
+SELECT * FROM users WHERE username = ?;
+
+
+
+Forgot Password
+
+-- Find user by email
+SELECT * FROM users WHERE email = ?;
+
+
+
+Reset Password
+
+-- Update user password
+UPDATE users SET password = ? WHERE email = ?;
+
+
+
+Change Password
+
+-- Find user
+SELECT * FROM users WHERE user_id = ?;
+
+-- Update user password
+UPDATE users SET password = ? WHERE user_id = ?;
+
+
+
+Change Primary Account
+
+-- Find user
+SELECT * FROM users WHERE user_id = ?;
+
+-- Find account
+SELECT * FROM accounts WHERE account_number = ?;
+
+-- Update primary account
+UPDATE users SET primary_account = ? WHERE user_id = ?;
+
+
+
+Get All Users
+
+SELECT * FROM users;
+
+
+
+Get User
+
+SELECT user_id, username, full_name, date_of_birth, mobile_no, email, address, aadhar_number, PAN_number, branch_id, role, primary_account
+FROM users
+WHERE user_id = ?;
+
+
+
+Update User
+
+UPDATE users
+SET column1 = ?, column2 = ?, ...
+WHERE user_id = ?;
+
+
+
+Get Account Details
+
+-- Find the account using the user ID
+SELECT * FROM accounts WHERE user_id = ?;
+
+-- Find the user
+SELECT * FROM users WHERE user_id = ?;
+
+
+
+Delete User
+
+-- Find and delete user
+DELETE FROM users WHERE user_id = ?;
+
+-- Find all accounts linked to this user
+SELECT * FROM accounts WHERE user_id = ?;
+
+-- Delete all accounts linked to this user
+DELETE FROM accounts WHERE user_id = ?;
+
+-- Delete loan details for loan accounts
+DELETE FROM loans WHERE account_number IN (SELECT account_number FROM accounts WHERE user_id = ? AND account_type = 'loan');
+
+
+
+Get User Count
+
+SELECT 
+    SUM(CASE WHEN role = 'customer' THEN 1 ELSE 0 END) AS customerCount,
+    SUM(CASE WHEN role = 'employee' THEN 1 ELSE 0 END) AS employeeCount,
+    SUM(CASE WHEN role = 'admin' THEN 1 ELSE 0 END) AS adminCount
+FROM users;
+
+
+
+Search User
+
+-- Search by user_id
+SELECT * FROM users WHERE user_id = ?;
+
+-- Search by mobile number
+SELECT * FROM users WHERE mobile_no = ?;
+
+-- Search by username
+SELECT * FROM users WHERE username = ?;
+
+
+
+Create New Account
+
+-- Check if user exists
+SELECT * FROM users WHERE user_id = ?;
+
+-- Generate unique account number (handled in application code)
+
+-- Update user's primary account if needed
+UPDATE users 
+SET primary_account = ? 
+WHERE user_id = ? AND primary_account IS NULL;
+
+-- Create new account
+INSERT INTO accounts (
+    account_number, user_id, account_type, 
+    balance, interest_rate, status, 
+    opening_date, is_verified
+) VALUES (
+    ?, ?, ?, 
+    COALESCE(?, 0), ?, ?, 
+    NOW(), false
+);
+
+
+
+
+Get All Accounts for User
+
+-- Find accounts by user_id
+SELECT * FROM accounts WHERE user_id = ?;
+
+
+
+
+Get All Accounts
+
+-- Get all accounts
+SELECT * FROM accounts;
+
+
+
+
+Get Account
+
+-- Find account by account_number
+SELECT * FROM accounts WHERE account_number = ?;
+
+-- Find user by user_id
+SELECT * FROM users WHERE user_id = ?;
+
+-- Combine account and user details (could be done with JOIN instead)
+-- This would be handled in application code to create accountDetails object
+
+
+
+
+Get Accounts by Verification Status
+
+-- Find accounts by verification status
+SELECT * FROM accounts WHERE is_verified = ?;
+
+
+
+
+Get Account Balance
+
+-- Find account by account_number
+SELECT account_number, account_type, balance, user_id 
+FROM accounts 
+WHERE account_number = ?;
+
+
+
+
+Get Primary Account
+
+-- Find user by user_id
+SELECT * FROM users WHERE user_id = ?;
+
+-- Find primary account
+SELECT account_number, account_type, balance, is_verified 
+FROM accounts 
+WHERE account_number = (SELECT primary_account FROM users WHERE user_id = ?);
+
+
+
+
+Get Account Statement
+
+-- Find account
+SELECT * FROM accounts WHERE account_number = ?;
+
+-- Find user
+SELECT * FROM users WHERE user_id = (SELECT user_id FROM accounts WHERE account_number = ?);
+
+-- Find branch
+SELECT * FROM branches WHERE branch_id = (SELECT branch_id FROM users WHERE user_id = (SELECT user_id FROM accounts WHERE account_number = ?));
+
+-- Get transactions with date range
+SELECT * FROM transactions 
+WHERE account_number = ? 
+AND (? IS NULL OR ? IS NULL OR (transaction_date BETWEEN ? AND ?))
+ORDER BY transaction_date ASC;
+
+
+
+
+Update Account
+
+-- Update account
+UPDATE accounts 
+SET 
+    account_type = COALESCE(?, account_type),
+    balance = COALESCE(?, balance),
+    interest_rate = COALESCE(?, interest_rate),
+    status = COALESCE(?, status),
+    is_verified = COALESCE(?, is_verified),
+    updated_at = NOW()
+WHERE account_number = ?;
+
+-- Find account after update
+SELECT * FROM accounts WHERE account_number = ?;
+
+-- Find user for email notification
+SELECT * FROM users WHERE user_id = (SELECT user_id FROM accounts WHERE account_number = ?);
+
+
+
+
+Delete Account
+
+-- Check if account exists
+SELECT * FROM accounts WHERE account_number = ?;
+
+-- Delete the account
+DELETE FROM accounts WHERE account_number = ?;
+
+
+
+Count Accounts by Type
+
+-- Count accounts of specific type
+SELECT COUNT(*) as count 
+FROM accounts 
+WHERE account_type = ?;
+
+
+
+Deposit
+
+-- Find the account
+SELECT * FROM accounts WHERE account_number = ?;
+
+-- Update account balance
+UPDATE accounts 
+SET balance = balance + ?, updated_at = NOW() 
+WHERE account_number = ?;
+
+-- Create a transaction record
+INSERT INTO transactions (
+    transaction_id, account_number, transaction_type, 
+    transaction_method, amount, transaction_date, 
+    description, status, balance_after_transaction
+) VALUES (
+    ?, ?, 'credit', 
+    ?, ?, NOW(), 
+    ?, 'completed', ?
+);
+
+
+
+
+Withdraw
+
+-- Find the account
+SELECT * FROM accounts WHERE account_number = ?;
+
+-- Update account balance
+UPDATE accounts 
+SET balance = balance - ?, updated_at = NOW() 
+WHERE account_number = ?;
+
+-- Create a transaction record
+INSERT INTO transactions (
+    transaction_id, account_number, transaction_type, 
+    transaction_method, amount, transaction_date, 
+    description, status, balance_after_transaction
+) VALUES (
+    ?, ?, 'debit', 
+    ?, ?, NOW(), 
+    ?, 'completed', ?
+);
+
+
+
+
+Transfer
+
+-- Find sender and recipient accounts
+SELECT * FROM accounts WHERE account_number IN (?, ?);
+
+-- Update sender account balance
+UPDATE accounts 
+SET balance = balance - ?, updated_at = NOW() 
+WHERE account_number = ?;
+
+-- Update recipient account balance
+UPDATE accounts 
+SET balance = balance + ?, updated_at = NOW() 
+WHERE account_number = ?;
+
+-- Create sender transaction record
+INSERT INTO transactions (
+    transaction_id, account_number, transaction_type, 
+    transaction_method, amount, description, status, 
+    recipient_account_number, balance_after_transaction
+) VALUES (
+    ?, ?, 'debit', 
+    ?, ?, ?, 'completed', 
+    ?, ?
+);
+
+-- Create recipient transaction record
+INSERT INTO transactions (
+    transaction_id, account_number, transaction_type, 
+    transaction_method, amount, description, status, 
+    balance_after_transaction
+) VALUES (
+    ?, ?, 'credit', 
+    ?, ?, ?, 'completed', 
+    ?
+);
+
+
+
+
+Get Last 5 Transactions
+
+SELECT * FROM transactions 
+WHERE account_number = ? 
+ORDER BY transaction_date DESC 
+LIMIT 5;
+
+
+
+
+Get All Transactions for Account
+
+SELECT * FROM transactions 
+WHERE account_number = ?
+  AND (? IS NULL OR transaction_date >= ?)
+  AND (? IS NULL OR transaction_date <= ?)
+  AND (? IS NULL OR transaction_type = ?)
+ORDER BY transaction_date DESC;
+
+
+
+
+Get All Transactions
+
+SELECT * FROM transactions 
+WHERE (? IS NULL OR transaction_date >= ?)
+  AND (? IS NULL OR transaction_date <= ?)
+  AND (? IS NULL OR transaction_type IN (?))
+ORDER BY transaction_date DESC;
+
+
+
+
+Get Transaction by ID
+
+SELECT * FROM transactions 
+WHERE transaction_id = ?;
+
+
+
+
+Pay Mobile Bill
+
+-- Find the account
+SELECT * FROM accounts WHERE account_number = ?;
+
+-- Update account balance
+UPDATE accounts 
+SET balance = balance - ?, updated_at = NOW() 
+WHERE account_number = ?;
+
+-- Create a transaction record
+INSERT INTO transactions (
+    transaction_id, account_number, transaction_type, 
+    amount, transaction_date, status, transaction_method, 
+    balance_after_transaction, description
+) VALUES (
+    ?, ?, 'Bill Payment', 
+    ?, NOW(), 'completed', 'BBPS', 
+    ?, ?
+);
+
+
+
+
+Get Transactions Summary for Today
+
+SELECT 
+    COUNT(*) as total_transactions,
+    SUM(CASE WHEN transaction_type IN ('credit', 'deposit', 'refund') THEN amount ELSE 0 END) as total_amount_in,
+    SUM(CASE WHEN transaction_type IN ('debit', 'withdrawal', 'transfer', 'bill payment') THEN amount ELSE 0 END) as total_amount_out
+FROM transactions
+WHERE transaction_date >= CURDATE() 
+  AND transaction_date < CURDATE() + INTERVAL 1 DAY
+  AND LOWER(status) = 'completed';
+
+
+
+Create Employee
+
+-- Check if user_id exists and is an employee
+SELECT * FROM users 
+WHERE user_id = ? AND role = 'employee';
+
+-- Check if employee already exists
+SELECT * FROM employees 
+WHERE user_id = ?;
+
+-- Create new employee
+INSERT INTO employees (user_id, salary, date_of_joining) 
+VALUES (?, ?, ?);
+
+
+
+
+Get All Employees
+
+SELECT * FROM employees;
+
+
+
+
+Get Employee by ID
+
+SELECT * FROM employees 
+WHERE user_id = ?;
+
+
+
+
+Request Loan
+
+-- Check if account exists
+SELECT * FROM accounts WHERE account_number = ?;
+
+-- Create loan request
+INSERT INTO loans (
+    account_number, loan_type, amount, interest_rate, 
+    term_months, total_amount_paid, remaining_balance, 
+    collateral, monthly_payment, status
+) VALUES (
+    ?, ?, ?, ?, 
+    ?, 0, ?, 
+    ?, 0, 'pending'
+);
+
+
+
+
+Approve Loan
+
+-- Check if loan exists
+SELECT * FROM loans WHERE account_number = ?;
+
+-- Check if account exists
+SELECT * FROM accounts WHERE account_number = ?;
+
+-- Validate approver (must be an employee/admin)
+SELECT * FROM users 
+WHERE user_id = ? 
+AND role IN ('manager', 'employee');
+
+-- Update loan details
+UPDATE loans 
+SET status = 'approved',
+    monthly_payment = ?,
+    approved_by = ?,
+    approval_date = NOW(),
+    disbursed_date = NOW(),
+    due_date = DATE_ADD(NOW(), INTERVAL 1 MONTH)
+WHERE account_number = ?;
+
+-- Increase account balance by loan amount
+UPDATE accounts 
+SET balance = balance + ?, 
+    updated_at = NOW()
+WHERE account_number = ?;
+
+
+
+
+Reject Loan
+
+-- Check if loan exists
+SELECT * FROM loans WHERE account_number = ?;
+
+-- Validate approver (must be an employee/admin)
+SELECT * FROM users 
+WHERE user_id = ? 
+AND role IN ('manager', 'employee');
+
+-- Update loan status to rejected
+UPDATE loans 
+SET status = 'rejected',
+    rejected_by = ?,
+    rejection_reason = ?,
+    rejection_date = NOW()
+WHERE account_number = ?;
+
+
+
+
+Get Loan Account
+
+-- Find the loan account
+SELECT * FROM accounts 
+WHERE account_number = ? 
+AND account_type = 'loan';
+
+-- Find loan details
+SELECT * FROM loans 
+WHERE account_number = ?;
+
+
+
+Get All Loan Accounts
+
+-- Retrieve all loan accounts
+SELECT * FROM accounts 
+WHERE account_type = 'loan';
+
+
+
+
+Create Branch
+
+-- Check if IFSC code already exists
+SELECT * FROM branches WHERE ifsc_code = ?;
+
+-- Validate manager_id (must be a manager)
+SELECT * FROM users WHERE user_id = ? AND role = 'manager';
+
+-- Create new branch
+INSERT INTO branches (
+    branch_id, branch_name, ifsc_code, address, 
+    manager_id, contact_number, opening_date
+) VALUES (
+    ?, ?, ?, ?, 
+    ?, ?, ?
+);
+
+
+
+
+Get All Branches
+
+SELECT * FROM branches;
+
+
+
+
+Get Branch by ID
+
+SELECT 
+    branch_id, branch_name, ifsc_code, address, 
+    manager_id, contact_number, opening_date
+FROM branches 
+WHERE branch_id = ?;

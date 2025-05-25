@@ -1,0 +1,1963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Employee Dashboard</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --secondary: #1e40af;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #94a3b8;
+            --gray-light: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --sidebar-width: 280px;
+            --header-height: 80px;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+            color: var(--dark);
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: white;
+            color: var(--dark);
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+            box-shadow: var(--box-shadow);
+            z-index: 10;
+            transition: var(--transition);
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid var(--gray-light);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-header h2 i {
+            color: var(--primary);
+        }
+
+        .sidebar ul {
+            list-style: none;
+            width: 100%;
+            padding: 0 10px;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 5px;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .sidebar ul li a {
+            text-decoration: none;
+            color: var(--dark);
+            font-size: 0.95rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .sidebar ul li a i {
+            width: 20px;
+            text-align: center;
+            color: var(--gray);
+        }
+
+        .sidebar ul li:hover {
+            background-color: var(--gray-light);
+        }
+
+        .sidebar ul li.active {
+            background-color: var(--primary-light);
+        }
+
+        .sidebar ul li.active a {
+            color: white;
+        }
+
+        .sidebar ul li.active a i {
+            color: white;
+        }
+
+        /* Main Container */
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            height: var(--header-height);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            background: white;
+            box-shadow: var(--box-shadow);
+            z-index: 5;
+        }
+
+        .header h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .header h2 span {
+            color: var(--primary);
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .profile-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .profile-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .profile-role {
+            font-size: 0.75rem;
+            color: var(--gray);
+        }
+
+        .profile-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            background-color: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Content */
+        .content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            background-color: #f1f5f9;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: var(--primary);
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 25px;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--dark);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--gray-light);
+            border-radius: var(--border-radius);
+            font-size: 0.95rem;
+            transition: var(--transition);
+            background-color: white;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            outline: none;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-col {
+            flex: 1;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--gray-light);
+            color: var(--dark);
+        }
+
+        .btn-secondary:hover {
+            background-color: #d1d5db;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #0d9c6b;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Transaction Table */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 20px;
+        }
+
+        .table th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 500;
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        .table th:first-child {
+            border-top-left-radius: var(--border-radius);
+        }
+
+        .table th:last-child {
+            border-top-right-radius: var(--border-radius);
+        }
+
+        .table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--gray-light);
+            background-color: white;
+        }
+
+        .table tr:last-child td:first-child {
+            border-bottom-left-radius: var(--border-radius);
+        }
+
+        .table tr:last-child td:last-child {
+            border-bottom-right-radius: var(--border-radius);
+        }
+
+        .table tr:hover td {
+            background-color: #f8fafc;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .badge-success {
+            background-color: #d1fae5;
+            color: var(--success);
+        }
+
+        .badge-warning {
+            background-color: #fef3c7;
+            color: var(--warning);
+        }
+
+        .badge-danger {
+            background-color: #fee2e2;
+            color: var(--danger);
+        }
+
+        /* Modals */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            width: 90%;
+            max-width: 500px;
+            transform: translateY(20px);
+            transition: var(--transition);
+        }
+
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--gray-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            color: var(--danger);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid var(--gray-light);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* Profile Modal */
+        .profile-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .profile-field {
+            margin-bottom: 15px;
+        }
+
+        .profile-field label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .profile-field span {
+            display: block;
+            font-size: 0.95rem;
+            color: var(--dark);
+            padding: 8px 12px;
+            background-color: #f8fafc;
+            border-radius: 6px;
+        }
+
+        /* Confirmation Modal */
+        .confirmation-icon {
+            font-size: 50px;
+            color: var(--success);
+            margin-bottom: 20px;
+        }
+
+        .confirmation-message {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .confirmation-message h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+
+        .confirmation-message p {
+            color: var(--gray);
+            margin-bottom: 5px;
+        }
+
+        .confirmation-message .highlight {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .sidebar {
+                position: fixed;
+                left: -100%;
+                top: 0;
+                bottom: 0;
+                z-index: 100;
+            }
+
+            .sidebar.active {
+                left: 0;
+            }
+
+            .main-container {
+                margin-left: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 0 15px;
+            }
+
+            .content {
+                padding: 20px 15px;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .profile-details {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Toggle for sidebar on mobile */
+        .sidebar-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark);
+            cursor: pointer;
+        }
+
+        @media (max-width: 992px) {
+            .sidebar-toggle {
+                display: block;
+            }
+        }
+
+        /* Loan fields */
+        .loan-fields {
+            background-color: #f8fafc;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-top: 15px;
+            border: 1px dashed var(--gray-light);
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--gray-light);
+            margin-bottom: 20px;
+        }
+
+        .empty-state p {
+            margin-top: 10px;
+        }
+
+        .table td:nth-child(6) { /* Amount column */
+            text-align: right;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2><i class="fas fa-university"></i> BankPro</h2>
+        </div>
+        <ul>
+            <li class="active" id="dashboard-link">
+                <a href="#" onclick="showSection('dashboard')">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Dashboard
+                </a>
+            </li>
+            <li id="withdraw-deposit-link">
+                <a href="#" onclick="showSection('withdraw-deposit')">
+                    <i class="fas fa-exchange-alt"></i>
+                    Transactions
+                </a>
+            </li>
+            <li id="transaction-history-link">
+                <a href="#" onclick="showSection('transaction-history')">
+                    <i class="fas fa-history"></i>
+                    Transaction History
+                </a>
+            </li>
+            <li id="new-account-link">
+                <a href="#" onclick="showSection('new-account')">
+                    <i class="fas fa-user-plus"></i>
+                    Account Management
+                </a>
+            </li>
+            <li id="kyc-update-link">
+                <a href="#" onclick="showSection('kyc-update')">
+                    <i class="fas fa-id-card"></i>
+                    KYC Update
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        
+        <!-- Header -->
+        <div class="header">
+            <button class="sidebar-toggle" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h2>Welcome, <span id="employee-name">Employee</span>!</h2>
+            <div class="profile" onclick="openProfile()">
+                <div class="profile-info">
+                    <div class="profile-name" id="employee"></div>
+                    <div class="profile-role">Bank Employee</div>
+                </div>
+                <div class="profile-img" id="profile-initials">E</div>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Dashboard -->
+            <div class="section" id="dashboard">
+                <h2 class="section-title"><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Check Customer Balance</h3>
+                    </div>
+                    <div class="form-group">
+                        <label for="customer-id">Account Number</label>
+                        <input type="text" id="customer-id" class="form-control" placeholder="Enter Account Number">
+                    </div>
+                    <button class="btn btn-primary" onclick="checkBalance()">
+                        <i class="fas fa-search"></i> Check Balance
+                    </button>
+                </div>
+            </div>
+
+            <!-- Withdraw/Deposit -->
+            <div class="section" id="withdraw-deposit" style="display:none;">
+                <h2 class="section-title"><i class="fas fa-exchange-alt"></i> Transactions</h2>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Withdraw / Deposit Money</h3>
+                    </div>
+                    <div class="form-group">
+                        <label for="wd-customer-id">Account Number</label>
+                        <input type="text" id="wd-customer-id" class="form-control" placeholder="Enter Account Number">
+                    </div>
+                    <div class="form-group">
+                        <label for="amount">Amount</label>
+                        <input type="number" id="amount" class="form-control" placeholder="Enter Amount">
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-danger" onclick="performTransaction('withdraw')">
+                            <i class="fas fa-money-bill-wave"></i> Withdraw
+                        </button>
+                        <button class="btn btn-success" onclick="performTransaction('deposit')">
+                            <i class="fas fa-coins"></i> Deposit
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transaction History -->
+            <div class="section" id="transaction-history" style="display:none;">
+                <h2 class="section-title"><i class="fas fa-history"></i> Transaction History</h2>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">View Transaction History</h3>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="history-customer-id">Account Number</label>
+                        <input type="text" id="history-customer-id" class="form-control" placeholder="Enter Account Number">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="start-date">Start Date</label>
+                                <input type="date" id="start-date" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="end-date">End Date</label>
+                                <input type="date" id="end-date" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="fetchTransactionHistory()">
+                            <i class="fas fa-search"></i> View History
+                        </button>
+                        <button class="btn btn-secondary" onclick="generateStatement()">
+                            <i class="fas fa-file-pdf"></i> Generate Statement
+                        </button>
+                    </div>
+                    
+                    <div class="table-responsive" style="margin-top: 20px;">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <th>Date</th>
+                                    <th>Method</th>
+                                    <th>Description</th>
+                                    <th>Type</th>
+                                    <th>Amount (₹)</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transaction-data">
+                                <tr>
+                                    <td colspan="7">
+                                        <div class="empty-state">
+                                            <i class="fas fa-search"></i>
+                                            <h3>No transactions found</h3>
+                                            <p>Enter search criteria to view transactions</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Management -->
+            <div class="section" id="new-account" style="display:none;">
+                <h2 class="section-title"><i class="fas fa-user-plus"></i> Account Management</h2>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Open New Account</h3>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="user-type">User Type</label>
+                        <select id="user-type" class="form-control" onchange="toggleUserForm()">
+                            <option value="">Select User Type</option>
+                            <option value="existing">Existing User</option>
+                            <option value="new">New User</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Existing User Form -->
+                    <form id="existing-user-form" style="display:none;" onsubmit="handleExistingUser(event)">
+                        <div class="form-group">
+                            <label for="existing-user-id">User ID</label>
+                            <input type="text" id="existing-user-id" class="form-control" placeholder="Enter User ID" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="existing-account-type">Account Type</label>
+                            <select id="existing-account-type" class="form-control" required onchange="toggleLoanFields('existing')">
+                                <option value="">Select Account Type</option>
+                                <option value="savings">Savings</option>
+                                <option value="current">Current</option>
+                                <option value="loan">Loan</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="existing-balance">Initial Balance</label>
+                                    <input type="number" id="existing-balance" class="form-control" placeholder="Enter Amount" required>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="existing-interest-rate">Interest Rate (%)</label>
+                                    <input type="number" id="existing-interest-rate" class="form-control" placeholder="Enter Rate" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Loan-specific fields -->
+                        <div id="existing-loan-fields" class="loan-fields" style="display:none;">
+                            <div class="form-group">
+                                <label for="existing-loan-type">Loan Type</label>
+                                <select id="existing-loan-type" class="form-control">
+                                    <option value="">Select Loan Type</option>
+                                    <option value="home loan">Home Loan</option>
+                                    <option value="car loan">Car Loan</option>
+                                    <option value="personal loan">Personal Loan</option>
+                                    <option value="education loan">Education Loan</option>
+                                    <option value="business loan">Business Loan</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="existing-loan-amount">Loan Amount</label>
+                                        <input type="number" id="existing-loan-amount" class="form-control" placeholder="Enter Amount">
+                                    </div>
+                                </div>
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="existing-loan-term">Loan Term (months)</label>
+                                        <input type="number" id="existing-loan-term" class="form-control" placeholder="Enter Term">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="existing-collateral-type">Collateral Type</label>
+                                <select id="existing-collateral-type" class="form-control">
+                                    <option value="">Select Collateral Type</option>
+                                    <option value="property">Property</option>
+                                    <option value="vehicle">Vehicle</option>
+                                    <option value="gold">Gold</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="existing-collateral-value">Collateral Value</label>
+                                        <input type="number" id="existing-collateral-value" class="form-control" placeholder="Estimated Value">
+                                    </div>
+                                </div>
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="existing-collateral-description">Description</label>
+                                        <input type="text" id="existing-collateral-description" class="form-control" placeholder="Collateral Description">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Open Account for Existing User
+                        </button>
+                    </form>
+
+                    <!-- New User Form -->
+                    <form id="new-user-form" style="display:none;" onsubmit="handleNewUser(event)">
+                        <h4 style="margin-bottom: 15px; color: var(--dark);">Personal Information</h4>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="username">Username</label>
+                                    <input type="text" id="username" class="form-control" placeholder="Enter Username" required>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="password">Password</label>
+                                    <input type="password" id="password" class="form-control" placeholder="Enter Password" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="full_name">Full Name</label>
+                            <input type="text" id="full_name" class="form-control" placeholder="Enter Full Name" required>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="date_of_birth">Date of Birth</label>
+                                    <input type="date" id="date_of_birth" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="mobile_no">Mobile Number</label>
+                                    <input type="tel" id="mobile_no" class="form-control" placeholder="Enter Mobile Number" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" class="form-control" placeholder="Enter Email" required>
+                        </div>
+                        
+                        <h4 style="margin: 20px 0 15px; color: var(--dark);">Address Information</h4>
+                        
+                        <div class="form-group">
+                            <label for="street">Street</label>
+                            <input type="text" id="street" class="form-control" placeholder="Enter Street" required>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="city">City</label>
+                                    <input type="text" id="city" class="form-control" placeholder="Enter City" required>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="state">State</label>
+                                    <input type="text" id="state" class="form-control" placeholder="Enter State" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="zipCode">Zip Code</label>
+                                    <input type="text" id="zipCode" class="form-control" placeholder="Enter Zip Code" required>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="country">Country</label>
+                                    <input type="text" id="country" class="form-control" placeholder="Enter Country" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <h4 style="margin: 20px 0 15px; color: var(--dark);">Identification</h4>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="aadhar_number">Aadhar Number</label>
+                                    <input type="text" id="aadhar_number" class="form-control" placeholder="Enter Aadhar Number" required>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="pan_number">PAN Number</label>
+                                    <input type="text" id="pan_number" class="form-control" placeholder="Enter PAN Number" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <h4 style="margin: 20px 0 15px; color: var(--dark);">Account Information</h4>
+                        
+                        <div class="form-group">
+                            <label for="branch_id">Branch</label>
+                            <select id="branch_id" class="form-control" required>
+                                <option value="">Select Branch</option>
+                                <option value="Mumbai">Mumbai</option>
+                                <option value="Delhi">Delhi</option>
+                                <option value="Bangalore">Bangalore</option>
+                                <option value="Hyderabad">Hyderabad</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="account_type">Account Type</label>
+                            <select id="account_type" class="form-control" required onchange="toggleLoanFields('new')">
+                                <option value="">Select Account Type</option>
+                                <option value="savings">Savings</option>
+                                <option value="current">Current</option>
+                                <option value="fixed_deposit">Fixed Deposit</option>
+                                <option value="loan">Loan</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="balance">Initial Balance</label>
+                                    <input type="number" id="balance" class="form-control" placeholder="Enter Amount" required>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="interest_rate">Interest Rate (%)</label>
+                                    <input type="number" id="interest_rate" class="form-control" placeholder="Enter Rate" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Loan-specific fields -->
+                        <div id="new-loan-fields" class="loan-fields" style="display:none;">
+                            <div class="form-group">
+                                <label for="loan-type">Loan Type</label>
+                                <select id="loan-type" class="form-control" required>
+                                    <option value="">Select Loan Type</option>
+                                    <option value="home loan">Home Loan</option>
+                                    <option value="car loan">Car Loan</option>
+                                    <option value="personal loan">Personal Loan</option>
+                                    <option value="education loan">Education Loan</option>
+                                    <option value="business loan">Business Loan</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="loan-amount">Loan Amount</label>
+                                        <input type="number" id="loan-amount" class="form-control" placeholder="Enter Amount" required>
+                                    </div>
+                                </div>
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="loan-term">Loan Term (months)</label>
+                                        <input type="number" id="loan-term" class="form-control" placeholder="Enter Term" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="collateral-type">Collateral Type</label>
+                                <select id="collateral-type" class="form-control" required>
+                                    <option value="">Select Collateral Type</option>
+                                    <option value="property">Property</option>
+                                    <option value="vehicle">Vehicle</option>
+                                    <option value="gold">Gold</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="collateral-value">Collateral Value</label>
+                                        <input type="number" id="collateral-value" class="form-control" placeholder="Estimated Value" required>
+                                    </div>
+                                </div>
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="collateral-description">Description</label>
+                                        <input type="text" id="collateral-description" class="form-control" placeholder="Collateral Description" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-user-plus"></i> Open Account for New User
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- KYC Update -->
+            <div class="section" id="kyc-update" style="display:none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">KYC Update</h3>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="kyc-user-id">User ID</label>
+                        <input type="text" id="kyc-user-id" class="form-control" placeholder="Enter User ID">
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="fetchUserDetails()">
+                        <i class="fas fa-search"></i> Fetch User Details
+                    </button>
+                    
+                    <div id="user-details" style="display: none; margin-top: 20px;"></div>
+                    
+                    <form id="kyc-update-form" style="display: none; margin-top: 20px;"></form>
+                </div>
+            </div>
+        </div>
+                            
+
+                <script>
+                    // Global variables
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const user_id = urlParams.get("user_id");
+
+                    if (!user_id) {
+                        alert("User ID is missing. Please log in again.");
+                        window.location.href = "login.html";
+                    }
+
+                    let currentEmployee = null;
+                
+                    // DOM Elements
+                    const sidebar = document.getElementById('sidebar');
+                    const sidebarToggle = document.querySelector('.sidebar-toggle');
+                    const profileModal = createModal('profileModal', 'User Profile');
+                    const confirmationModal = createModal('confirmationModal', 'Transaction Successful');
+                    const balanceModal = createModal('balanceModal', 'Balance Information');
+                
+                    // Initialize the dashboard
+                    document.addEventListener('DOMContentLoaded', async () => {
+                        await loadEmployeeProfile();
+                        updateProfileInitials();
+                        showSection('dashboard');
+                    });
+                
+                    // Toggle sidebar on mobile
+                    function toggleSidebar() {
+                        sidebar.classList.toggle('active');
+                    }
+                
+                    // Create modal dynamically
+                    function createModal(id, title) {
+                        const modal = document.createElement('div');
+                        modal.className = 'modal';
+                        modal.id = id;
+                        
+                        modal.innerHTML = `
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h3 class="modal-title">${title}</h3>
+                                    <button class="modal-close" onclick="closeModal('${id}')">&times;</button>
+                                </div>
+                                <div class="modal-body" id="${id}-body"></div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-primary" onclick="closeModal('${id}')">Close</button>
+                                </div>
+                            </div>
+                        `;
+                        
+                        document.body.appendChild(modal);
+                        return modal;
+                    }
+                
+                    // Show modal
+                    function showModal(id) {
+                        const modal = document.getElementById(id);
+                        modal.classList.add('active');
+                    }
+                
+                    // Close modal
+                    function closeModal(id) {
+                        const modal = document.getElementById(id);
+                        modal.classList.remove('active');
+                    }
+                
+                    // Load employee profile
+                    async function loadEmployeeProfile() {
+                        try {
+                            const response = await fetch(`http://localhost:5000/api/users/profile/${user_id}`);
+                            if (!response.ok) throw new Error('Failed to fetch profile');
+                            
+                            currentEmployee = await response.json();
+                            document.getElementById("employee").innerText = currentEmployee.full_name;
+                            document.getElementById("employee-name").innerText = currentEmployee.full_name;
+                        } catch (error) {
+                            console.error("Error loading employee profile:", error);
+                            alert("Failed to load employee profile");
+                        }
+                    }
+                
+                    // Update profile initials
+                    function updateProfileInitials() {
+                        if (currentEmployee) {
+                            const initials = currentEmployee.full_name.split(' ').map(n => n[0]).join('');
+                            document.getElementById('profile-initials').textContent = initials;
+                        }
+                    }
+
+
+                    // Reset all sections when switching
+                    function resetAllSections() {
+                        // Dashboard section
+                        document.getElementById('customer-id').value = '';
+                        
+                        // Withdraw/Deposit section
+                        document.getElementById('wd-customer-id').value = '';
+                        document.getElementById('amount').value = '';
+                        
+                        // Transaction History section
+                        document.getElementById('history-customer-id').value = '';
+                        document.getElementById('start-date').value = '';
+                        document.getElementById('end-date').value = '';
+                        document.getElementById('transaction-data').innerHTML = `
+                            <tr>
+                                <td colspan="7">
+                                    <div class="empty-state">
+                                        <i class="fas fa-search"></i>
+                                        <h3>No transactions found</h3>
+                                        <p>Enter search criteria to view transactions</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                        
+                        // Account Management section
+                        document.getElementById('user-type').value = '';
+                        document.getElementById('existing-user-form').style.display = 'none';
+                        document.getElementById('new-user-form').style.display = 'none';
+                        document.getElementById('existing-user-form').reset();
+                        document.getElementById('new-user-form').reset();
+                        document.getElementById('existing-loan-fields').style.display = 'none';
+                        document.getElementById('new-loan-fields').style.display = 'none';
+                        
+                        // KYC Update section
+                        document.getElementById('kyc-user-id').value = '';
+                        document.getElementById('user-details').style.display = 'none';
+                        document.getElementById('kyc-update-form').style.display = 'none';
+                        document.getElementById('kyc-update-form').reset();
+                    }
+                
+                    // Show section and update active menu
+                    function showSection(sectionId) {
+                        console.log(`Attempting to show section: ${sectionId}`); // Debug log
+
+                        resetAllSections();
+                        
+                        // Hide all sections
+                        document.querySelectorAll('.section').forEach(section => {
+                            section.style.display = 'none';
+                        });
+                        
+                        // Show requested section
+                        const section = document.getElementById(sectionId);
+                        if (section) {
+                            section.style.display = 'block';
+                            console.log(`Successfully showed section: ${sectionId}`); // Debug log
+                        } else {
+                            console.error(`Section not found: ${sectionId}`);
+                            // Fallback to dashboard
+                            document.getElementById('dashboard').style.display = 'block';
+                        }
+                        
+                        // Update active menu item
+                        document.querySelectorAll('.sidebar ul li').forEach(item => {
+                            item.classList.remove('active');
+                        });
+                        
+                        const menuItem = document.getElementById(`${sectionId}-link`);
+                        if (menuItem) {
+                            menuItem.classList.add('active');
+                        }
+                        
+                        // Close sidebar on mobile
+                        if (window.innerWidth < 992) {
+                            document.getElementById('sidebar').classList.remove('active');
+                        }
+                    }
+                
+                    // Open profile modal
+                    async function openProfile() {
+                        if (!currentEmployee) return;
+                        
+                        const profileHTML = `
+                            <div class="profile-details">
+                                <div class="profile-field">
+                                    <label>Full Name</label>
+                                    <span>${currentEmployee.full_name}</span>
+                                </div>
+                                <div class="profile-field">
+                                    <label>Email</label>
+                                    <span>${currentEmployee.email}</span>
+                                </div>
+                                <div class="profile-field">
+                                    <label>Mobile</label>
+                                    <span>${currentEmployee.mobile_no}</span>
+                                </div>
+                                <div class="profile-field">
+                                    <label>Date of Birth</label>
+                                    <span>${new Date(currentEmployee.date_of_birth).toLocaleDateString()}</span>
+                                </div>
+                                <div class="profile-field">
+                                    <label>Address</label>
+                                    <span>${currentEmployee.address.street}, ${currentEmployee.address.city}, ${currentEmployee.address.state} - ${currentEmployee.address.zipCode}</span>
+                                </div>
+                                <div class="profile-field">
+                                    <label>Aadhar Number</label>
+                                    <span>${currentEmployee.aadhar_number}</span>
+                                </div>
+                                <div class="profile-field">
+                                    <label>PAN Number</label>
+                                    <span>${currentEmployee.PAN_number}</span>
+                                </div>
+                            </div>
+                        `;
+                        
+                        document.getElementById('profileModal-body').innerHTML = profileHTML;
+                        showModal('profileModal');
+                    }
+                
+                    // Check account balance
+                    async function checkBalance() {
+                        const accountNumber = document.getElementById("customer-id").value;
+                        if (!accountNumber) {
+                            alert("Please enter an account number");
+                            return;
+                        }
+                
+                        try {
+                            const response = await fetch(`http://localhost:5000/api/accounts/balance/${accountNumber}`);
+                            if (!response.ok) throw new Error("Failed to fetch balance");
+                
+                            const data = await response.json();
+                            showBalanceConfirmation(accountNumber, data.balance);
+                        } catch (error) {
+                            console.error("Error:", error);
+                            alert("Failed to fetch balance. Please try again.");
+                        }
+                    }
+                
+                    // Show balance confirmation
+                    function showBalanceConfirmation(accountNumber, balance) {
+                        const balanceHTML = `
+                            <div class="confirmation-message">
+                                <div class="confirmation-icon">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <h3>Balance Check Successful</h3>
+                                <p>Account Number: <span class="highlight">${accountNumber}</span></p>
+                                <p>Available Balance: <span class="highlight">${balance}</span></p>
+                            </div>
+                        `;
+                        
+                        document.getElementById('balanceModal-body').innerHTML = balanceHTML;
+                        showModal('balanceModal');
+                    }
+                
+                    // Perform transaction (withdraw/deposit)
+                    async function performTransaction(type) {
+                        const accountNumber = document.getElementById("wd-customer-id").value;
+                        const amount = parseFloat(document.getElementById("amount").value);
+                
+                        if (!accountNumber || !amount || amount <= 0) {
+                            alert("Please enter valid account number and amount");
+                            return;
+                        }
+                
+                        const url = type === "withdraw" 
+                            ? `http://localhost:5000/api/transactions/withdraw` 
+                            : `http://localhost:5000/api/transactions/deposit`;
+                
+                        try {
+                            const response = await fetch(url, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    account_number: accountNumber,
+                                    amount,
+                                    transaction_method: "cash",
+                                    description: `${type} by Employee`
+                                })
+                            });
+                
+                            if (!response.ok) throw new Error('Transaction failed');
+                
+                            const result = await response.json();
+                            showTransactionConfirmation(result.transaction_id, amount, type);
+                        } catch (error) {
+                            console.error('Error:', error);
+                            alert(`Transaction failed: ${error.message}`);
+                        }
+                    }
+                
+                    // Show transaction confirmation
+                    function showTransactionConfirmation(transactionId, amount, type) {
+                        const transactionHTML = `
+                            <div class="confirmation-message">
+                                <div class="confirmation-icon">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <h3>${type.charAt(0).toUpperCase() + type.slice(1)} Successful</h3>
+                                <p>Transaction ID: <span class="highlight">${transactionId}</span></p>
+                                <p>Amount: <span class="highlight">₹${amount.toFixed(2)}</span></p>
+                                <p>Method: <span class="highlight">Cash</span></p>
+                            </div>
+                        `;
+                        
+                        document.getElementById('confirmationModal-body').innerHTML = transactionHTML;
+                        showModal('confirmationModal');
+                        
+                        // Clear form
+                        document.getElementById("amount").value = "";
+                    }
+                
+                    // Fetch transaction history
+                    async function fetchTransactionHistory() {
+                        const accountNumber = document.getElementById("history-customer-id").value;
+                        const startDate = document.getElementById("start-date").value;
+                        const endDate = document.getElementById("end-date").value;
+                        
+                        if (!accountNumber) {
+                            alert("Please enter an account number");
+                            return;
+                        }
+
+                        try {
+                            // Build query parameters
+                            let url = `http://localhost:5000/api/transactions/all/${accountNumber}`;
+                            const params = [];
+                            
+                            if (startDate) params.push(`start=${encodeURIComponent(startDate)}`);
+                            if (endDate) params.push(`end=${encodeURIComponent(endDate)}`);
+                            
+                            if (params.length > 0) {
+                                url += `?${params.join('&')}`;
+                            }
+
+                            const response = await fetch(url);
+                            if (!response.ok) throw new Error("Failed to fetch transactions");
+
+                            const data = await response.json();
+                            displayTransactionHistory(data);
+                        } catch (error) {
+                            console.error('Error:', error);
+                            displayTransactionHistory([]);
+                            alert('Failed to fetch transaction history. Please try again.');
+                        }
+                    }
+
+                    function displayTransactionHistory(transactions) {
+                        const tableBody = document.getElementById("transaction-data");
+                        tableBody.innerHTML = '';
+
+                        if (transactions.length === 0) {
+                            tableBody.innerHTML = `
+                                <tr>
+                                    <td colspan="7">
+                                        <div class="empty-state">
+                                            <i class="fas fa-search"></i>
+                                            <h3>No transactions found</h3>
+                                            <p>No transactions match your search criteria</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `;
+                            return;
+                        }
+
+                        transactions.forEach(transaction => {
+                            const row = tableBody.insertRow();
+                            
+                            // Format date
+                            const transactionDate = new Date(transaction.transaction_date);
+                            const formattedDate = transactionDate.toLocaleDateString() + ' ' + transactionDate.toLocaleTimeString();
+                            
+                            // Format amount
+                            const formattedAmount = new Intl.NumberFormat('en-IN', {
+                                style: 'currency',
+                                currency: 'INR'
+                            }).format(transaction.amount).replace('₹', '₹');
+                            
+                            // Determine status badge
+                            let statusBadge = '';
+                            if (transaction.status === 'completed') {
+                                statusBadge = '<span class="badge badge-success">Completed</span>';
+                            } else if (transaction.status === 'pending') {
+                                statusBadge = '<span class="badge badge-warning">Pending</span>';
+                            } else if (transaction.status === 'failed') {
+                                statusBadge = '<span class="badge badge-danger">Failed</span>';
+                            } else {
+                                statusBadge = '<span class="badge">Unknown</span>';
+                            }
+                            
+                            row.innerHTML = `
+                                <td>${transaction.transaction_id || 'N/A'}</td>
+                                <td>${formattedDate}</td>
+                                <td>${transaction.transaction_method || 'N/A'}</td>
+                                <td>${transaction.description || 'N/A'}</td>
+                                <td>${transaction.transaction_type || 'N/A'}</td>
+                                <td>${formattedAmount}</td>
+                                <td>${statusBadge}</td>
+                            `;
+                        });
+                    }
+                
+                    // Generate account statement
+                    async function generateStatement() {
+                        const accountNumber = document.getElementById("history-customer-id").value;
+                        if (!accountNumber) {
+                            alert("Please enter an account number");
+                            return;
+                        }
+                
+                        try {
+                            const response = await fetch(`http://localhost:5000/api/accounts/statement/${accountNumber}`);
+                            if (!response.ok) throw new Error('Failed to generate statement');
+                
+                            const blob = await response.blob();
+                            const url = window.URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.style.display = 'none';
+                            a.href = url;
+                            a.download = `statement_${accountNumber}.pdf`;
+                            document.body.appendChild(a);
+                            a.click();
+                            window.URL.revokeObjectURL(url);
+                        } catch (error) {
+                            console.error('Error:', error);
+                            alert('Failed to generate statement. Please try again.');
+                        }
+                    }
+                
+                    // Toggle user form based on selection
+                    function toggleUserForm() {
+                        const userType = document.getElementById('user-type').value;
+                        document.getElementById('existing-user-form').style.display = userType === 'existing' ? 'block' : 'none';
+                        document.getElementById('new-user-form').style.display = userType === 'new' ? 'block' : 'none';
+                    }
+                
+                    // Toggle loan fields based on account type
+                    function toggleLoanFields(formType) {
+                        const accountType = document.getElementById(formType === 'existing' ? 'existing-account-type' : 'account_type').value;
+                        const loanFields = document.getElementById(formType === 'existing' ? 'existing-loan-fields' : 'new-loan-fields');
+                        loanFields.style.display = accountType === 'loan' ? 'block' : 'none';
+                    }
+                
+                    // Handle existing user form submission
+                    async function handleExistingUser(event) {
+                        event.preventDefault();
+                
+                        const userId = document.getElementById('existing-user-id').value;
+                        const accountType = document.getElementById('existing-account-type').value;
+                
+                        const accountData = {
+                            account_type: accountType,
+                            balance: parseFloat(document.getElementById('existing-balance').value),
+                            interest_rate: parseFloat(document.getElementById('existing-interest-rate').value)
+                        };
+                
+                        if (accountType === 'loan') {
+                            accountData.loan_type = document.getElementById('existing-loan-type').value;
+                            accountData.amount = parseFloat(document.getElementById('existing-loan-amount').value);
+                            accountData.term_months = parseInt(document.getElementById('existing-loan-term').value);
+                            accountData.collateral = {
+                                type: document.getElementById('existing-collateral-type').value,
+                                estimated_value: parseFloat(document.getElementById('existing-collateral-value').value),
+                                description: document.getElementById('existing-collateral-description').value
+                            };
+                        }
+                
+                        try {
+                            const response = await fetch(`http://localhost:5000/api/accounts/create/${userId}`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(accountData),
+                            });
+                
+                            if (!response.ok) throw new Error('Failed to create account');
+                
+                            const result = await response.json();
+                
+                            if (accountType === 'loan') {
+                                const loanResponse = await fetch(`http://localhost:5000/api/loan/create/${result.account_number}`, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify(accountData),
+                                });
+                
+                                if (!loanResponse.ok) throw new Error('Failed to create loan account');
+                                const loanResult = await loanResponse.json();
+                                showSuccessMessage(`Loan account opened successfully!<br>Loan ID: ${loanResult.loan_id}`);
+                            } else {
+                                showSuccessMessage(`Account opened successfully!<br>Account Number: ${result.account_number}`);
+                            }
+                
+                            // Reset form
+                            event.target.reset();
+                        } catch (error) {
+                            console.error('Error:', error);
+                            alert(`Failed to open account: ${error.message}`);
+                        }
+                    }
+                
+                    // Handle new user form submission
+                    async function handleNewUser(event) {
+                        event.preventDefault();
+                
+                        const branch = document.getElementById('branch_id').value;
+                        let branchId = '';
+                        if (branch === 'Delhi') {
+                            branchId = 'BR001';
+                        } else if (branch === 'Mumbai') {
+                            branchId = 'BR002';
+                        } else if (branch === 'Bangalore') {
+                            branchId = 'BR003';
+                        } else if (branch === 'Hyderabad') {
+                            branchId = 'BR004';
+                        }
+                
+                        const userData = {
+                            username: document.getElementById('username').value,
+                            password: document.getElementById('password').value,
+                            full_name: document.getElementById('full_name').value,
+                            date_of_birth: document.getElementById('date_of_birth').value,
+                            mobile_no: document.getElementById('mobile_no').value,
+                            email: document.getElementById('email').value,
+                            address: {
+                                street: document.getElementById('street').value,
+                                city: document.getElementById('city').value,
+                                state: document.getElementById('state').value,
+                                zipCode: document.getElementById('zipCode').value,
+                                country: document.getElementById('country').value
+                            },
+                            aadhar_number: document.getElementById('aadhar_number').value,
+                            PAN_number: document.getElementById('pan_number').value,
+                            branch_id: branchId
+                        };
+                
+                        const accountType = document.getElementById('account_type').value;
+                        const accountData = {
+                            account_type: accountType,
+                            balance: parseFloat(document.getElementById('balance').value),
+                            interest_rate: parseFloat(document.getElementById('interest_rate').value)
+                        };
+                
+                        if (accountType === 'loan') {
+                            accountData.loan_type = document.getElementById('loan-type').value;
+                            accountData.amount = parseFloat(document.getElementById('loan-amount').value);
+                            accountData.term_months = parseInt(document.getElementById('loan-term').value);
+                            accountData.collateral = {
+                                type: document.getElementById('collateral-type').value,
+                                estimated_value: parseFloat(document.getElementById('collateral-value').value),
+                                description: document.getElementById('collateral-description').value
+                            };
+                        }
+                
+                        try {
+                            // Register new user
+                            const userResponse = await fetch('http://localhost:5000/api/users/register', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(userData),
+                            });
+                
+                            if (!userResponse.ok) throw new Error('Failed to register user');
+                
+                            const userResult = await userResponse.json();
+                
+                            // Create account for the new user
+                            const accountResponse = await fetch(`http://localhost:5000/api/accounts/create/${userResult.user_id}`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(accountData),
+                            });
+                
+                            if (!accountResponse.ok) throw new Error('Failed to create account');
+                
+                            const accountResult = await accountResponse.json();
+                
+                            if (accountType === 'loan') {
+                                const loanResponse = await fetch(`http://localhost:5000/api/loan/create/${accountResult.account_number}`, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify(accountData),
+                                });
+                
+                                if (!loanResponse.ok) throw new Error('Failed to create loan account');
+                                const loanResult = await loanResponse.json();
+                                showSuccessMessage(`User registered and loan account opened successfully!<br>User ID: ${userResult.user_id}<br>Loan ID: ${loanResult.loan_id}`);
+                            } else {
+                                showSuccessMessage(`User registered and account opened successfully!<br>User ID: ${userResult.user_id}<br>Account Number: ${accountResult.account_number}`);
+                            }
+                
+                            // Reset form
+                            event.target.reset();
+                            document.getElementById('user-type').value = '';
+                            toggleUserForm();
+                        } catch (error) {
+                            console.error('Error:', error);
+                            alert(`Failed to complete registration: ${error.message}`);
+                        }
+                    }
+                
+                    // Show success message
+                    function showSuccessMessage(message) {
+                        const successHTML = `
+                            <div class="confirmation-message">
+                                <div class="confirmation-icon">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <h3>Success!</h3>
+                                <p>${message}</p>
+                            </div>
+                        `;
+                        
+                        document.getElementById('confirmationModal-body').innerHTML = successHTML;
+                        showModal('confirmationModal');
+                    }
+                
+                    // KYC Update functions
+                    async function fetchUserDetails() {
+                        const userId = document.getElementById('kyc-user-id').value;
+                        if (!userId) {
+                            alert("Please enter a user ID");
+                            return;
+                        }
+                
+                        try {
+                            const response = await fetch(`http://localhost:5000/api/users/profile/${userId}`);
+                            if (!response.ok) throw new Error('Failed to fetch user details');
+                
+                            const userData = await response.json();
+                            displayUserDetails(userData);
+                        } catch (error) {
+                            console.error('Error:', error);
+                            alert('Failed to fetch user details. Please try again.');
+                        }
+                    }
+                
+                    function displayUserDetails(userData) {
+                        const userDetailsDiv = document.getElementById('user-details');
+                        userDetailsDiv.innerHTML = '';
+                        userDetailsDiv.style.display = 'block';
+                
+                        const fields = [
+                            { id: 'full_name', label: 'Full Name', value: userData.full_name },
+                            { id: 'email', label: 'Email', value: userData.email },
+                            { id: 'mobile_no', label: 'Mobile', value: userData.mobile_no },
+                            { id: 'date_of_birth', label: 'Date of Birth', value: new Date(userData.date_of_birth).toLocaleDateString() },
+                            { id: 'address', label: 'Address', value: `${userData.address.street}, ${userData.address.city}, ${userData.address.state}, ${userData.address.zipCode}` },
+                            { id: 'aadhar_number', label: 'Aadhar Number', value: userData.aadhar_number },
+                            { id: 'PAN_number', label: 'PAN Number', value: userData.PAN_number }
+                        ];
+                
+                        fields.forEach(field => {
+                            const div = document.createElement('div');
+                            div.className = 'form-group';
+                            div.innerHTML = `
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                                    <input type="checkbox" id="checkbox-${field.id}" style="margin: 0;">
+                                    <label for="checkbox-${field.id}" style="margin: 0; font-weight: 500;">${field.label}: ${field.value}</label>
+                                </div>
+                            `;
+                            userDetailsDiv.appendChild(div);
+                        });
+                
+                        const updateButton = document.createElement('button');
+                        updateButton.className = 'btn btn-primary';
+                        updateButton.innerHTML = '<i class="fas fa-sync-alt"></i> Update Selected Fields';
+                        updateButton.onclick = generateUpdateForm;
+                        userDetailsDiv.appendChild(updateButton);
+                    }
+                
+                    function generateUpdateForm() {
+                        const form = document.getElementById('kyc-update-form');
+                        form.innerHTML = '';
+                        form.style.display = 'block';
+                
+                        const fields = ['full_name', 'email', 'mobile_no', 'date_of_birth', 'address', 'aadhar_number', 'PAN_number'];
+                        let hasSelectedFields = false;
+                
+                        fields.forEach(field => {
+                            if (document.getElementById(`checkbox-${field}`) && document.getElementById(`checkbox-${field}`).checked) {
+                                hasSelectedFields = true;
+                                const div = document.createElement('div');
+                                div.className = 'form-group';
+                                
+                                if (field === 'address') {
+                                    div.innerHTML = `
+                                        <h4 style="margin: 15px 0 10px;">Update Address</h4>
+                                        <label for="update-street">Street</label>
+                                        <input type="text" id="update-street" class="form-control" placeholder="Enter Street">
+                                        
+                                        <div class="form-row">
+                                            <div class="form-col">
+                                                <label for="update-city">City</label>
+                                                <input type="text" id="update-city" class="form-control" placeholder="Enter City">
+                                            </div>
+                                            <div class="form-col">
+                                                <label for="update-state">State</label>
+                                                <input type="text" id="update-state" class="form-control" placeholder="Enter State">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-row">
+                                            <div class="form-col">
+                                                <label for="update-zipCode">Zip Code</label>
+                                                <input type="text" id="update-zipCode" class="form-control" placeholder="Enter Zip Code">
+                                            </div>
+                                            <div class="form-col">
+                                                <label for="update-country">Country</label>
+                                                <input type="text" id="update-country" class="form-control" placeholder="Enter Country">
+                                            </div>
+                                        </div>
+                                    `;
+                                } else {
+                                    const label = field.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                                    div.innerHTML = `
+                                        <label for="update-${field}">${label}</label>
+                                        <input type="${field === 'date_of_birth' ? 'date' : 'text'}" id="update-${field}" class="form-control" placeholder="Enter ${label}">
+                                    `;
+                                }
+                                
+                                form.appendChild(div);
+                            }
+                        });
+                
+                        if (!hasSelectedFields) {
+                            alert('Please select at least one field to update');
+                            return;
+                        }
+                
+                        const submitButton = document.createElement('button');
+                        submitButton.className = 'btn btn-primary';
+                        submitButton.innerHTML = '<i class="fas fa-save"></i> Submit Updates';
+                        submitButton.onclick = submitKYCUpdates;
+                        form.appendChild(submitButton);
+                    }
+                
+                    async function submitKYCUpdates(event) {
+                        event.preventDefault();
+                        const userId = document.getElementById('kyc-user-id').value;
+                        const updateData = {};
+                
+                        // Check which fields are selected for update
+                        if (document.getElementById('checkbox-full_name')?.checked && document.getElementById('update-full_name')?.value) {
+                            updateData.full_name = document.getElementById('update-full_name').value;
+                        }
+                        if (document.getElementById('checkbox-email')?.checked && document.getElementById('update-email')?.value) {
+                            updateData.email = document.getElementById('update-email').value;
+                        }
+                        if (document.getElementById('checkbox-mobile_no')?.checked && document.getElementById('update-mobile_no')?.value) {
+                            updateData.mobile_no = document.getElementById('update-mobile_no').value;
+                        }
+                        if (document.getElementById('checkbox-date_of_birth')?.checked && document.getElementById('update-date_of_birth')?.value) {
+                            updateData.date_of_birth = document.getElementById('update-date_of_birth').value;
+                        }
+                        if (document.getElementById('checkbox-aadhar_number')?.checked && document.getElementById('update-aadhar_number')?.value) {
+                            updateData.aadhar_number = document.getElementById('update-aadhar_number').value;
+                        }
+                        if (document.getElementById('checkbox-PAN_number')?.checked && document.getElementById('update-PAN_number')?.value) {
+                            updateData.PAN_number = document.getElementById('update-PAN_number').value;
+                        }
+                
+                        // Handle address update
+                        if (document.getElementById('checkbox-address')?.checked) {
+                            updateData.address = {
+                                street: document.getElementById('update-street')?.value || '',
+                                city: document.getElementById('update-city')?.value || '',
+                                state: document.getElementById('update-state')?.value || '',
+                                zipCode: document.getElementById('update-zipCode')?.value || '',
+                                country: document.getElementById('update-country')?.value || ''
+                            };
+                        }
+                
+                        try {
+                            const response = await fetch(`http://localhost:5000/api/users/update/${userId}`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(updateData)
+                            });
+                
+                            if (!response.ok) throw new Error('Failed to update user details');
+                
+                            showSuccessMessage('KYC details updated successfully!');
+                            document.getElementById('kyc-update-form').style.display = 'none';
+                            document.getElementById('kyc-update-form').reset();
+                            fetchUserDetails(); // Refresh user details
+                        } catch (error) {
+                            console.error('Error:', error);
+                            alert(`Failed to update KYC details: ${error.message}`);
+                        }
+                    }
+                </script>
+</body>
+</html>
+
+
+

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transactions - NextGen Banking</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="transactions.css">
+</head>
+<body>
+    <header>
+        <!-- Header content (same as before) -->
+    </header>
+
+    <main>
+        <section id="transactions-section">
+            <h2><i class="fas fa-exchange-alt"></i> Transactions</h2>
+            <div class="card" id="transaction-filters">
+                <h3>Filters</h3>
+                <form id="filter-form">
+                    <select id="account-select">
+                        <option value="all">All Accounts</option>
+                    </select>
+                    <select id="transaction-type">
+                        <option value="all">All Types</option>
+                        <option value="deposit">Deposits</option>
+                        <option value="withdrawal">Withdrawals</option>
+                        <option value="transfer">Transfers</option>
+                    </select>
+                    <input type="date" id="start-date">
+                    <input type="date" id="end-date">
+                    <button type="submit">Apply Filters</button>
+                </form>
+            </div>
+            <div class="card" id="transactions-list"></div>
+            <div class="pagination">
+                <button id="prev-page">Previous</button>
+                <span id="page-info"></span>
+                <button id="next-page">Next</button>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <!-- Footer content (same as before) -->
+    </footer>
+
+    <script src="transactions.js"></script>
+</body>
+</html>

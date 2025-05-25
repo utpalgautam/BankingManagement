@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Registration - BankPro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --secondary: #1e40af;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #94a3b8;
+            --gray-light: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+            color: var(--dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .registration-container {
+            background: white;
+            padding: 40px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            width: 100%;
+            max-width: 450px;
+            transition: var(--transition);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .registration-container:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .registration-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .registration-header h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .registration-header p {
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .step-indicator::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: var(--gray-light);
+            z-index: 1;
+            transform: translateY(-50%);
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--gray-light);
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-bottom: 8px;
+            transition: var(--transition);
+        }
+
+        .step-label {
+            font-size: 0.85rem;
+            color: var(--gray);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .step.active .step-number {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .step.active .step-label {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .form-section {
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        .account-details-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 0;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: var(--dark);
+        }
+
+        .input-container {
+            position: relative;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--gray-light);
+            border-radius: var(--border-radius);
+            font-size: 0.95rem;
+            transition: var(--transition);
+            background-color: white;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            outline: none;
+        }
+
+        .form-control.error {
+            border-color: var(--danger);
+        }
+
+        .error-message {
+            color: var(--danger);
+            font-size: 0.8rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 16px 12px;
+            padding-right: 40px;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .password-toggle:hover {
+            color: var(--primary);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            flex: 1;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--gray-light);
+            color: var(--dark);
+        }
+
+        .btn-secondary:hover {
+            background-color: #d1d5db;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 24px;
+            border-radius: var(--border-radius);
+            color: white;
+            font-weight: 500;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        .toast-success {
+            background-color: var(--success);
+        }
+
+        .toast-error {
+            background-color: var(--danger);
+        }
+
+        .toast-warning {
+            background-color: var(--warning);
+        }
+
+        .toast-info {
+            background-color: var(--primary);
+        }
+
+        .password-strength {
+            margin-top: 5px;
+            height: 4px;
+            background-color: var(--gray-light);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease, background-color 0.3s ease;
+            background-color: #ef4444;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .registration-container {
+                padding: 30px 20px;
+            }
+            
+            .registration-header h2 {
+                font-size: 1.5rem;
+            }
+            
+            .step-label {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="registration-container">
+        <div class="registration-header">
+            <h2><i class="fas fa-user-plus"></i> Create New Account</h2>
+            <p>Join BankPro in just a few simple steps</p>
+        </div>
+        
+        <div class="step-indicator">
+            <div class="step active" id="step1-indicator">
+                <div class="step-number">1</div>
+                <div class="step-label">Account Details</div>
+            </div>
+            <div class="step" id="step2-indicator">
+                <div class="step-number">2</div>
+                <div class="step-label">Personal Information</div>
+            </div>
+        </div>
+        
+        <form id="registration-form">
+            <!-- Step 1: Account Details -->
+            <div class="form-section active" id="step1">
+                <div class="account-details-form">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <div class="input-container">
+                            <input type="text" id="username" class="form-control" placeholder="Enter your username (min 5 chars)" required>
+                        </div>
+                        <div class="error-message" id="username-error">Username must be at least 5 characters</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-container">
+                            <input type="password" id="password" class="form-control" placeholder="Create a password (min 8 chars)" required>
+                            <i class="fas fa-eye password-toggle" id="password-toggle"></i>
+                        </div>
+                        <div class="password-strength">
+                            <div class="password-strength-bar" id="password-strength-bar"></div>
+                        </div>
+                        <div class="error-message" id="password-error">Password must be at least 8 characters with uppercase, number, and special character</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirm-password">Confirm Password</label>
+                        <div class="input-container">
+                            <input type="password" id="confirm-password" class="form-control" placeholder="Confirm your password" required>
+                        </div>
+                        <div class="error-message" id="confirm-password-error">Passwords do not match</div>
+                    </div>
+                </div>
+                
+                <div class="btn-group">
+                    <button type="button" id="next-btn" class="btn btn-primary">
+                        <i class="fas fa-arrow-right"></i> Continue
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Step 2: Personal Information -->
+            <div class="form-section" id="step2">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="full-name">Full Name</label>
+                        <input type="text" id="full-name" class="form-control" placeholder="Enter your full name" required>
+                        <div class="error-message" id="full-name-error">Please enter your full name</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="branch">Branch</label>
+                        <select id="branch" class="form-control" required>
+                            <option value="">Select your branch</option>
+                        </select>
+                        <div class="error-message" id="branch-error">Please select a branch</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="dob">Date of Birth</label>
+                        <input type="date" id="dob" class="form-control" required>
+                        <div class="error-message" id="dob-error">Please select your date of birth</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="mobile">Mobile Number</label>
+                        <input type="tel" id="mobile" class="form-control" placeholder="Enter 10-digit mobile number" required>
+                        <div class="error-message" id="mobile-error">Please enter a valid 10-digit mobile number</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" class="form-control" placeholder="Enter email address" required>
+                        <div class="error-message" id="email-error">Please enter a valid email address</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="street">Street Address</label>
+                        <input type="text" id="street" class="form-control" placeholder="Enter street address" required>
+                        <div class="error-message" id="street-error">Please enter your street address</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        <input type="text" id="city" class="form-control" placeholder="Enter city" required>
+                        <div class="error-message" id="city-error">Please enter your city</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="state">State</label>
+                        <input type="text" id="state" class="form-control" placeholder="Enter state" required>
+                        <div class="error-message" id="state-error">Please enter your state</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="zipCode">Zip Code</label>
+                        <input type="text" id="zipCode" class="form-control" placeholder="Enter 6-digit zip code" required>
+                        <div class="error-message" id="zipCode-error">Please enter a valid 6-digit zip code</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="country">Country</label>
+                        <input type="text" id="country" class="form-control" placeholder="Enter country" required>
+                        <div class="error-message" id="country-error">Please enter your country</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="aadhaar">Aadhaar Number</label>
+                        <input type="text" id="aadhaar" class="form-control" placeholder="Enter 12-digit Aadhaar number" required>
+                        <div class="error-message" id="aadhaar-error">Please enter a valid 12-digit Aadhaar number</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="pan">PAN Number</label>
+                        <input type="text" id="pan" class="form-control" placeholder="Enter 10-digit PAN number" required>
+                        <div class="error-message" id="pan-error">Please enter a valid 10-digit PAN number</div>
+                    </div>
+                </div>
+                
+                <div class="btn-group">
+                    <button type="button" id="prev-btn" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                    <button type="submit" id="register-btn" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i> Complete Registration
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // DOM Elements
+            const step1Section = document.getElementById("step1");
+            const step2Section = document.getElementById("step2");
+            const step1Indicator = document.getElementById("step1-indicator");
+            const step2Indicator = document.getElementById("step2-indicator");
+            const nextBtn = document.getElementById("next-btn");
+            const prevBtn = document.getElementById("prev-btn");
+            const registerBtn = document.getElementById("register-btn");
+            const passwordInput = document.getElementById("password");
+            const confirmPasswordInput = document.getElementById("confirm-password");
+            const passwordToggle = document.getElementById("password-toggle");
+            const passwordStrengthBar = document.getElementById("password-strength-bar");
+            const form = document.getElementById("registration-form");
+            
+            // Form validation state
+            let isPasswordValid = false;
+            let doPasswordsMatch = false;
+            
+            // Initialize the form
+            resetForm();
+            populateBranches();
+            
+            // Event Listeners
+            nextBtn.addEventListener("click", validateStep1);
+            prevBtn.addEventListener("click", goToPreviousStep);
+            passwordInput.addEventListener("input", checkPasswordStrength);
+            confirmPasswordInput.addEventListener("input", checkPasswordMatch);
+            passwordToggle.addEventListener("click", togglePasswordVisibility);
+            
+            // Add input validation for all fields
+            document.getElementById("username").addEventListener("input", validateUsername);
+            document.getElementById("full-name").addEventListener("input", validateFullName);
+            document.getElementById("mobile").addEventListener("input", validateMobile);
+            document.getElementById("email").addEventListener("input", validateEmail);
+            document.getElementById("zipCode").addEventListener("input", validateZipCode);
+            document.getElementById("aadhaar").addEventListener("input", validateAadhaar);
+            document.getElementById("pan").addEventListener("input", validatePAN);
+            
+            // Functions
+            function resetForm() {
+                // Clear all inputs
+                document.querySelectorAll('input').forEach(input => {
+                    if (input.type !== 'submit' && input.type !== 'button') {
+                        input.value = '';
+                    }
+                });
+                
+                // Reset password visibility
+                passwordInput.type = 'password';
+                confirmPasswordInput.type = 'password';
+                passwordToggle.classList.remove("fa-eye-slash");
+                passwordToggle.classList.add("fa-eye");
+                
+                // Reset validation states
+                isPasswordValid = false;
+                doPasswordsMatch = false;
+                passwordStrengthBar.style.width = '0%';
+                passwordStrengthBar.style.backgroundColor = '';
+                
+                // Hide all error messages
+                document.querySelectorAll('.error-message').forEach(el => {
+                    el.style.display = 'none';
+                });
+                
+                // Remove error classes
+                document.querySelectorAll('.form-control').forEach(el => {
+                    el.classList.remove('error');
+                });
+                
+                // Show step 1 by default
+                step1Section.classList.add('active');
+                step2Section.classList.remove('active');
+                step1Indicator.classList.add('active');
+                step2Indicator.classList.remove('active');
+            }
+            
+            async function populateBranches() {
+    const branchSelect = document.getElementById("branch");
+    if (!branchSelect) {
+        console.error("Branch select element not found");
+        return;
+    }
+
+    try {
+        const response = await fetch("http://localhost:5000/api/branch/all");
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const branches = await response.json();
+        
+        // Clear existing options except the first one
+        branchSelect.innerHTML = '<option value="" selected disabled>Select your branch</option>';
+        
+        if (!Array.isArray(branches)) {
+            throw new Error("Invalid branches data format");
+        }
+        
+        // Add branch options
+        branches.forEach(branch => {
+            if (branch.branch_id && branch.branch_name) {
+                const option = document.createElement("option");
+                option.value = branch.branch_id;
+                option.textContent = `${branch.branch_name} (${branch.branch_id})`;
+                branchSelect.appendChild(option);
+            }
+        });
+
+        // If no branches were added (empty array or invalid data)
+        if (branchSelect.options.length === 1) {
+            const option = document.createElement("option");
+            option.value = "";
+            option.textContent = "No branches available";
+            branchSelect.appendChild(option);
+            branchSelect.disabled = true;
+        }
+    } catch (error) {
+        console.error("Error fetching branches:", error);
+        
+        // Fallback UI
+        branchSelect.innerHTML = '<option value="" selected disabled>Failed to load branches</option>';
+        branchSelect.disabled = true;
+        
+        showToast("Failed to load branches. Please try again later.", "error");
+    }
+}
+            
+            function validateUsername() {
+                const username = document.getElementById("username").value.trim();
+                const errorElement = document.getElementById("username-error");
+                
+                if (username.length < 5) {
+                    showError("username", "Username must be at least 5 characters");
+                    return false;
+                } else {
+                    hideError("username");
+                    return true;
+                }
+            }
+            
+            function validateFullName() {
+                const fullName = document.getElementById("full-name").value.trim();
+                const errorElement = document.getElementById("full-name-error");
+                
+                if (fullName.length < 3) {
+                    showError("full-name", "Please enter your full name");
+                    return false;
+                } else {
+                    hideError("full-name");
+                    return true;
+                }
+            }
+            
+            function validateMobile() {
+                const mobile = document.getElementById("mobile").value.trim();
+                const errorElement = document.getElementById("mobile-error");
+                const mobileRegex = /^[0-9]{10}$/;
+                
+                if (!mobileRegex.test(mobile)) {
+                    showError("mobile", "Please enter a valid 10-digit mobile number");
+                    return false;
+                } else {
+                    hideError("mobile");
+                    return true;
+                }
+            }
+            
+            function validateEmail() {
+                const email = document.getElementById("email").value.trim();
+                const errorElement = document.getElementById("email-error");
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                
+                if (!emailRegex.test(email)) {
+                    showError("email", "Please enter a valid email address");
+                    return false;
+                } else {
+                    hideError("email");
+                    return true;
+                }
+            }
+            
+            function validateZipCode() {
+                const zipCode = document.getElementById("zipCode").value.trim();
+                const errorElement = document.getElementById("zipCode-error");
+                const zipRegex = /^[0-9]{6}$/;
+                
+                if (!zipRegex.test(zipCode)) {
+                    showError("zipCode", "Please enter a valid 6-digit zip code");
+                    return false;
+                } else {
+                    hideError("zipCode");
+                    return true;
+                }
+            }
+            
+            function validateAadhaar() {
+                const aadhaar = document.getElementById("aadhaar").value.trim();
+                const errorElement = document.getElementById("aadhaar-error");
+                const aadhaarRegex = /^[0-9]{12}$/;
+                
+                if (!aadhaarRegex.test(aadhaar)) {
+                    showError("aadhaar", "Please enter a valid 12-digit Aadhaar number");
+                    return false;
+                } else {
+                    hideError("aadhaar");
+                    return true;
+                }
+            }
+            
+            function validatePAN() {
+                const pan = document.getElementById("pan").value.trim();
+                const errorElement = document.getElementById("pan-error");
+                const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+                
+                if (!panRegex.test(pan)) {
+                    showError("pan", "Please enter a valid 10-digit PAN number (format: ABCDE1234F)");
+                    return false;
+                } else {
+                    hideError("pan");
+                    return true;
+                }
+            }
+            
+            function showError(fieldId, message) {
+                const inputElement = document.getElementById(fieldId);
+                const errorElement = document.getElementById(`${fieldId}-error`);
+                
+                inputElement.classList.add('error');
+                errorElement.textContent = message;
+                errorElement.style.display = 'block';
+            }
+            
+            function hideError(fieldId) {
+                const inputElement = document.getElementById(fieldId);
+                const errorElement = document.getElementById(`${fieldId}-error`);
+                
+                inputElement.classList.remove('error');
+                errorElement.style.display = 'none';
+            }
+            
+            function validateStep1() {
+                const usernameValid = validateUsername();
+                const passwordValid = checkPasswordStrength();
+                const confirmPasswordValid = checkPasswordMatch();
+                
+                if (!usernameValid || !passwordValid || !confirmPasswordValid) {
+                    if (!usernameValid) {
+                        showError("username", "Username must be at least 5 characters");
+                    }
+                    if (!passwordValid) {
+                        showError("password", "Password must be at least 8 characters with uppercase, number, and special character");
+                    }
+                    if (!confirmPasswordValid) {
+                        showError("confirm-password", "Passwords do not match");
+                    }
+                    return;
+                }
+                
+                // Proceed to next step
+                step1Section.classList.remove('active');
+                step2Section.classList.add('active');
+                step1Indicator.classList.remove('active');
+                step2Indicator.classList.add('active');
+            }
+            
+            function goToPreviousStep() {
+                step2Section.classList.remove('active');
+                step1Section.classList.add('active');
+                step2Indicator.classList.remove('active');
+                step1Indicator.classList.add('active');
+            }
+            
+            function checkPasswordStrength() {
+                const password = passwordInput.value;
+                let strength = 0;
+                
+                // Check length
+                if (password.length >= 8) strength += 25;
+                
+                // Check uppercase letters
+                if (/[A-Z]/.test(password)) strength += 25;
+                
+                // Check numbers
+                if (/\d/.test(password)) strength += 25;
+                
+                // Check special characters
+                if (/[^A-Za-z0-9]/.test(password)) strength += 25;
+                
+                // Update strength bar
+                passwordStrengthBar.style.width = `${strength}%`;
+                
+                // Set color based on strength
+                if (strength < 50) {
+                    passwordStrengthBar.style.backgroundColor = "#ef4444"; // var(--danger)
+                } else if (strength < 75) {
+                    passwordStrengthBar.style.backgroundColor = "#f59e0b"; // var(--warning)
+                } else {
+                    passwordStrengthBar.style.backgroundColor = "#10b981"; // var(--success)
+                }
+                
+                isPasswordValid = strength >= 75;
+                
+                if (password.length > 0 && !isPasswordValid) {
+                    showError("password", "Password must be at least 8 characters with uppercase, number, and special character");
+                    return false;
+                } else {
+                    hideError("password");
+                    return true;
+                }
+            }
+            
+            function checkPasswordMatch() {
+                const password = passwordInput.value;
+                const confirmPassword = confirmPasswordInput.value;
+                
+                if (password && confirmPassword) {
+                    if (password === confirmPassword) {
+                        hideError("confirm-password");
+                        doPasswordsMatch = true;
+                        return true;
+                    } else {
+                        showError("confirm-password", "Passwords do not match");
+                        doPasswordsMatch = false;
+                        return false;
+                    }
+                } else {
+                    hideError("confirm-password");
+                    doPasswordsMatch = false;
+                    return false;
+                }
+            }
+            
+            function togglePasswordVisibility() {
+                if (passwordInput.type === "password") {
+                    passwordInput.type = "text";
+                    confirmPasswordInput.type = "text";
+                    passwordToggle.classList.remove("fa-eye");
+                    passwordToggle.classList.add("fa-eye-slash");
+                } else {
+                    passwordInput.type = "password";
+                    confirmPasswordInput.type = "password";
+                    passwordToggle.classList.remove("fa-eye-slash");
+                    passwordToggle.classList.add("fa-eye");
+                }
+            }
+            
+            function showToast(message, type) {
+                const toast = document.createElement("div");
+                toast.className = `toast toast-${type}`;
+                toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-times-circle' : 'fa-info-circle'}"></i> ${message}`;
+                document.body.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.classList.add("show");
+                }, 10);
+                
+                setTimeout(() => {
+                    toast.classList.remove("show");
+                    setTimeout(() => {
+                        document.body.removeChild(toast);
+                    }, 300);
+                }, 3000);
+            }
+            
+            function validateStep2() {
+                let isValid = true;
+                
+                if (!validateFullName()) isValid = false;
+                if (!validateMobile()) isValid = false;
+                if (!validateEmail()) isValid = false;
+                
+                const dob = document.getElementById("dob").value.trim();
+                if (!dob) {
+                    showError("dob", "Please select your date of birth");
+                    isValid = false;
+                } else {
+                    hideError("dob");
+                }
+                
+                const street = document.getElementById("street").value.trim();
+                if (!street) {
+                    showError("street", "Please enter your street address");
+                    isValid = false;
+                } else {
+                    hideError("street");
+                }
+                
+                const city = document.getElementById("city").value.trim();
+                if (!city) {
+                    showError("city", "Please enter your city");
+                    isValid = false;
+                } else {
+                    hideError("city");
+                }
+                
+                const state = document.getElementById("state").value.trim();
+                if (!state) {
+                    showError("state", "Please enter your state");
+                    isValid = false;
+                } else {
+                    hideError("state");
+                }
+                
+                if (!validateZipCode()) isValid = false;
+                
+                const country = document.getElementById("country").value.trim();
+                if (!country) {
+                    showError("country", "Please enter your country");
+                    isValid = false;
+                } else {
+                    hideError("country");
+                }
+                
+                if (!validateAadhaar()) isValid = false;
+                if (!validatePAN()) isValid = false;
+                
+                const branch = document.getElementById("branch").value;
+                if (!branch) {
+                    showError("branch", "Please select a branch");
+                    isValid = false;
+                } else {
+                    hideError("branch");
+                }
+                
+                return isValid;
+            }
+            
+            // Form submission
+            form.addEventListener("submit", async function(event) {
+                event.preventDefault();
+                
+                // Validate all fields
+                if (!validateStep2()) {
+                    showToast("Please fix all errors before submitting", "warning");
+                    return;
+                }
+                
+                // Gather all form data
+                const formData = {
+                    username: document.getElementById("username").value.trim(),
+                    password: document.getElementById("password").value.trim(),
+                    full_name: document.getElementById("full-name").value.trim(),
+                    date_of_birth: document.getElementById("dob").value.trim(),
+                    mobile_no: document.getElementById("mobile").value.trim(),
+                    email: document.getElementById("email").value.trim(),
+                    address: {
+                        street: document.getElementById("street").value.trim(),
+                        city: document.getElementById("city").value.trim(),
+                        state: document.getElementById("state").value.trim(),
+                        zipCode: document.getElementById("zipCode").value.trim(),
+                        country: document.getElementById("country").value.trim()
+                    },
+                    aadhar_number: document.getElementById("aadhaar").value.trim(),
+                    PAN_number: document.getElementById("pan").value.trim(),
+                    branch_id: document.getElementById("branch").value
+                };
+                
+                try {
+                    registerBtn.disabled = true;
+                    registerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering...';
+                    
+                    const response = await fetch('http://localhost:5000/api/users/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        showToast("Registration successful! Redirecting to login...", "success");
+                        setTimeout(() => {
+                            window.location.href = "login.html";
+                        }, 2000);
+                    } else {
+                        showToast(data.message || "Registration failed", "error");
+                        registerBtn.disabled = false;
+                        registerBtn.innerHTML = '<i class="fas fa-user-plus"></i> Complete Registration';
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showToast("An error occurred. Please try again.", "error");
+                    registerBtn.disabled = false;
+                    registerBtn.innerHTML = '<i class="fas fa-user-plus"></i> Complete Registration';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

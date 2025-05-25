@@ -1,0 +1,2963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --secondary: #1e40af;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #94a3b8;
+            --gray-light: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --sidebar-width: 280px;
+            --header-height: 80px;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+            color: var(--dark);
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: white;
+            color: var(--dark);
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+            box-shadow: var(--box-shadow);
+            z-index: 10;
+            transition: var(--transition);
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid var(--gray-light);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-header h2 i {
+            color: var(--primary);
+        }
+
+        .sidebar ul {
+            list-style: none;
+            width: 100%;
+            padding: 0 10px;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 5px;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .sidebar ul li a {
+            text-decoration: none;
+            color: var(--dark);
+            font-size: 0.95rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .sidebar ul li a i {
+            width: 20px;
+            text-align: center;
+            color: var(--gray);
+        }
+
+        .sidebar ul li:hover {
+            background-color: var(--gray-light);
+        }
+
+        .sidebar ul li.active {
+            background-color: var(--primary-light);
+        }
+
+        .sidebar ul li.active a {
+            color: white;
+        }
+
+        .sidebar ul li.active a i {
+            color: white;
+        }
+
+        /* Main Container */
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            height: var(--header-height);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            background: white;
+            box-shadow: var(--box-shadow);
+            z-index: 5;
+        }
+
+        .header h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .header h2 span {
+            color: var(--primary);
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            /* position: relative; */
+        }
+
+        .profile-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .profile-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .profile-role {
+            font-size: 0.75rem;
+            color: var(--gray);
+        }
+
+        .profile-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            background-color: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Content */
+        .content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            background-color: #f1f5f9;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: var(--primary);
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 25px;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        /* Account Summary */
+        .account-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .account-card {
+            background: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+        }
+
+        .account-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .account-type {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-bottom: 5px;
+        }
+
+        .account-number {
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .account-balance {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+
+        .account-details {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .action-btn {
+            background: white;
+            border: none;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .action-btn:hover {
+            background: var(--primary-light);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .action-btn i {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .action-btn span {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--dark);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--gray-light);
+            border-radius: var(--border-radius);
+            font-size: 0.95rem;
+            transition: var(--transition);
+            background-color: white;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            outline: none;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-col {
+            flex: 1;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--gray-light);
+            color: var(--dark);
+        }
+
+        .btn-secondary:hover {
+            background-color: #d1d5db;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #0d9c6b;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Transaction Table */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 20px;
+        }
+
+        .table th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 500;
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        .table th:first-child {
+            border-top-left-radius: var(--border-radius);
+        }
+
+        .table th:last-child {
+            border-top-right-radius: var(--border-radius);
+        }
+
+        .table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--gray-light);
+            background-color: white;
+        }
+
+        .table tr:last-child td:first-child {
+            border-bottom-left-radius: var(--border-radius);
+        }
+
+        .table tr:last-child td:last-child {
+            border-bottom-right-radius: var(--border-radius);
+        }
+
+        .table tr:hover td {
+            background-color: #f8fafc;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .badge-success {
+            background-color: #d1fae5;
+            color: var(--success);
+        }
+
+        .badge-warning {
+            background-color: #fef3c7;
+            color: var(--warning);
+        }
+
+        .badge-danger {
+            background-color: #fee2e2;
+            color: var(--danger);
+        }
+
+        /* Bill Payment */
+        .bill-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .bill-category {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--box-shadow);
+        }
+
+        .bill-category:hover {
+            background: var(--primary-light);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .bill-category i {
+            font-size: 1.75rem;
+            margin-bottom: 10px;
+        }
+
+        .bill-category span {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Modals */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1100;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            width: 90%;
+            max-width: 500px;
+            transform: translateY(20px);
+            transition: var(--transition);
+        }
+
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--gray-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            color: var(--danger);
+        }
+
+        .modal-body {
+            padding: 20px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid var(--gray-light);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* Confirmation Modal */
+        .confirmation-icon {
+            font-size: 50px;
+            color: var(--success);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .confirmation-message {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .confirmation-message h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+
+        .confirmation-message p {
+            color: var(--gray);
+            margin-bottom: 5px;
+        }
+
+        .confirmation-message .highlight {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .sidebar {
+                position: fixed;
+                left: -100%;
+                top: 0;
+                bottom: 0;
+                z-index: 100;
+            }
+
+            .sidebar.active {
+                left: 0;
+            }
+
+            .main-container {
+                margin-left: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 0 15px;
+            }
+
+            .content {
+                padding: 20px 15px;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .account-summary {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--gray-light);
+            margin-bottom: 20px;
+        }
+
+        .empty-state p {
+            margin-top: 10px;
+        }
+
+        /* Toggle for sidebar on mobile */
+        .sidebar-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark);
+            cursor: pointer;
+        }
+
+        @media (max-width: 992px) {
+            .sidebar-toggle {
+                display: block;
+            }
+        }
+
+        /* Loading spinner */
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Amount formatting */
+        .amount {
+            font-family: monospace;
+            text-align: right;
+        }
+
+        /* Account verification status */
+        .verification-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .verified {
+            background-color: #d1fae5;
+            color: var(--success);
+        }
+
+        .unverified {
+            background-color: #fef3c7;
+            color: var(--warning);
+        }
+
+        /* Profile Modal Styles */
+        .profile-modal {
+            max-width: 600px;
+        }
+        
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        
+        .profile-info-container {
+            flex: 1;
+        }
+        
+        .profile-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .profile-role {
+            color: var(--gray);
+            margin-bottom: 10px;
+        }
+        
+        .profile-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .detail-item {
+            margin-bottom: 15px;
+        }
+        
+        .detail-label {
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            font-size: 0.95rem;
+            padding: 8px 12px;
+            background-color: #f8fafc;
+            border-radius: 6px;
+            word-break: break-word;
+        }
+        
+        .full-width {
+            grid-column: span 2;
+        }
+        
+        .profile-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        /* Change Password Form */
+        .change-password-form {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f8fafc;
+            border-radius: var(--border-radius);
+        }
+        
+        /* Change Primary Account Form */
+        .change-primary-form {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f8fafc;
+            border-radius: var(--border-radius);
+        }
+        
+        @media (max-width: 768px) {
+            .profile-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .full-width {
+                grid-column: span 1;
+            }
+            
+            .profile-actions {
+                flex-direction: column;
+            }
+        }
+
+        /* Text colors */
+        .text-success {
+            color: var(--success);
+        }
+
+        .text-danger {
+            color: var(--danger);
+        }
+
+        /* Confirmation dialog above profile modal */
+        .confirmation-dialog {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            z-index: 1200;
+            max-width: 500px;
+            width: 90%;
+            display: none;
+        }
+
+        .confirmation-dialog.active {
+            display: block;
+        }
+
+        .confirmation-dialog h3 {
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        .confirmation-dialog p {
+            margin-bottom: 20px;
+            color: var(--gray);
+        }
+
+        .confirmation-dialog .btn-group {
+            justify-content: flex-end;
+        }
+
+        /* Overlay for confirmation dialog */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1100;
+            display: none;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2><i class="fas fa-university"></i> BankPro</h2>
+        </div>
+        <ul>
+            <li class="active" id="dashboard-link">
+                <a href="#" onclick="showSection('dashboard')">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Dashboard
+                </a>
+            </li>
+            <li id="transactions-link">
+                <a href="#" onclick="showSection('transactions')">
+                    <i class="fas fa-exchange-alt"></i>
+                    Transactions
+                </a>
+            </li>
+            <li id="transfer-link">
+                <a href="#" onclick="showSection('transfer')">
+                    <i class="fas fa-money-bill-wave"></i>
+                    Transfer Funds
+                </a>
+            </li>
+            <li id="bills-link">
+                <a href="#" onclick="showSection('bills')">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    Pay Bills
+                </a>
+            </li>
+            <li id="accounts-link">
+                <a href="#" onclick="showSection('accounts')">
+                    <i class="fas fa-wallet"></i>
+                    My Accounts
+                </a>
+            </li>
+            <li>
+                <a href="#" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Header -->
+        <div class="header">
+            <button class="sidebar-toggle" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h2>Welcome, <span id="customer-name">Customer</span>!</h2>
+            <div class="profile" onclick="openProfile()">
+                <div class="profile-info">
+                    <div class="profile-name" id="profile-name">Loading...</div>
+                    <div class="profile-role">Customer</div>
+                </div>
+                <div class="profile-img" id="profile-initials">C</div>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Dashboard Section -->
+            <div class="section" id="dashboard">
+                <h2 class="section-title"><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
+                
+                <!-- Account Summary -->
+                <div class="account-summary" id="account-summary">
+                    <!-- Dynamically loaded -->
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <button class="action-btn" onclick="showSection('transfer')">
+                        <i class="fas fa-exchange-alt"></i>
+                        <span>Transfer</span>
+                    </button>
+                    <button class="action-btn" onclick="showSection('bills')">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <span>Pay Bills</span>
+                    </button>
+                    <button class="action-btn" onclick="showSection('transactions')">
+                        <i class="fas fa-history"></i>
+                        <span>History</span>
+                    </button>
+                    <button class="action-btn" onclick="showSection('accounts')">
+                        <i class="fas fa-wallet"></i>
+                        <span>Accounts</span>
+                    </button>
+                </div>
+                
+                <!-- Recent Transactions -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Recent Transactions</h3>
+                        <button class="btn btn-secondary" onclick="showSection('transactions')">
+                            <i class="fas fa-eye"></i> View All
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Description</th>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-transactions">
+                                <!-- Dynamically loaded -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transactions Section -->
+            <div class="section" id="transactions" style="display:none;">
+                <h2 class="section-title"><i class="fas fa-history"></i> Transaction History</h2>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Filter Transactions</h3>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="transaction-account">Account</label>
+                                <select id="transaction-account" class="form-control">
+                                    <!-- Dynamically loaded -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="transaction-type">Transaction Type</label>
+                                <select id="transaction-type" class="form-control">
+                                    <option value="">All Types</option>
+                                    <option value="deposit">Deposit</option>
+                                    <option value="withdrawal">Withdrawal</option>
+                                    <option value="transfer">Transfer</option>
+                                    <option value="Bill Payment">Bill Payment</option>
+                                    <option value="credit">Credit</option>
+                                    <option value="debit">Debit</option>
+                                    <option value="refund">Refund</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="start-date">From Date</label>
+                                <input type="date" id="start-date" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="end-date">To Date</label>
+                                <input type="date" id="end-date" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="fetchTransactions()">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                        <button class="btn btn-secondary" onclick="generateStatement()">
+                            <i class="fas fa-file-pdf"></i> Generate Statement
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Transaction History</h3>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Transaction ID</th>
+                                    <th>Description</th>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transaction-history">
+                                <!-- Dynamically loaded -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transfer Funds Section -->
+            <div class="section" id="transfer" style="display:none;">
+                <h2 class="section-title"><i class="fas fa-money-bill-wave"></i> Transfer Funds</h2>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Make a Transfer</h3>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="from-account">From Account</label>
+                        <select id="from-account" class="form-control">
+                            <!-- Dynamically loaded -->
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="to-account">To Account Number</label>
+                        <input type="text" id="to-account" class="form-control" placeholder="Enter recipient account number">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirm-account">Confirm Account Number</label>
+                        <input type="text" id="confirm-account" class="form-control" placeholder="Confirm account number">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="transfer-amount">Amount (₹)</label>
+                        <input type="number" id="transfer-amount" class="form-control" placeholder="Enter amount">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="transfer-method">Transfer Method</label>
+                        <select id="transfer-method" class="form-control">
+                            <option value="NEFT">NEFT</option>
+                            <option value="RTGS">RTGS</option>
+                            <option value="IMPS">IMPS</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="transfer-remarks">Remarks (Optional)</label>
+                        <input type="text" id="transfer-remarks" class="form-control" placeholder="Enter remarks">
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="initiateTransfer()">
+                        <i class="fas fa-paper-plane"></i> Transfer Now
+                    </button>
+                </div>
+            </div>
+
+            <!-- Pay Bills Section -->
+            <div class="section" id="bills" style="display:none;">
+                <h2 class="section-title"><i class="fas fa-file-invoice-dollar"></i> Pay Bills</h2>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Select Biller Category</h3>
+                    </div>
+                    
+                    <div class="bill-categories">
+                        <div class="bill-category" onclick="showBillForm('mobile')">
+                            <i class="fas fa-mobile-alt"></i>
+                            <span>Mobile</span>
+                        </div>
+                        <div class="bill-category" onclick="showBillForm('electricity')">
+                            <i class="fas fa-bolt"></i>
+                            <span>Electricity</span>
+                        </div>
+                        <div class="bill-category" onclick="showBillForm('creditcard')">
+                            <i class="fas fa-credit-card"></i>
+                            <span>Credit Card</span>
+                        </div>
+                        <div class="bill-category" onclick="showBillForm('dth')">
+                            <i class="fas fa-tv"></i>
+                            <span>DTH</span>
+                        </div>
+                        <div class="bill-category" onclick="showBillForm('broadband')">
+                            <i class="fas fa-wifi"></i>
+                            <span>Broadband</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card" id="bill-form-container" style="display:none;">
+                    <!-- Dynamically loaded based on bill category -->
+                </div>
+            </div>
+
+            <!-- My Accounts Section -->
+            <div class="section" id="accounts" style="display:none;">
+                <h2 class="section-title"><i class="fas fa-wallet"></i> My Accounts</h2>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Account Summary</h3>
+                        <button class="btn btn-primary" onclick="showNewAccountForm()">
+                            <i class="fas fa-plus"></i> Open New Account
+                        </button>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Account Number</th>
+                                    <th>Type</th>
+                                    <th>Balance</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="accounts-list">
+                                <!-- Dynamically loaded -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="card" id="new-account-form" style="display:none;">
+                    <div class="card-header">
+                        <h3 class="card-title">Open New Account</h3>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="new-account-type">Account Type</label>
+                        <select id="new-account-type" class="form-control">
+                            <option value="">Select Account Type</option>
+                            <option value="savings">Savings Account</option>
+                            <option value="current">Current Account</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="initial-deposit">Initial Deposit (₹)</label>
+                        <input type="number" id="initial-deposit" class="form-control" placeholder="Enter amount">
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="submitNewAccount()">
+                            <i class="fas fa-check"></i> Submit
+                        </button>
+                        <button class="btn btn-secondary" onclick="hideNewAccountForm()">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="card" id="account-details" style="display:none;">
+                    <div class="card-header">
+                        <h3 class="card-title" id="account-details-title">Account Details</h3>
+                    </div>
+                    <div id="account-details-content">
+                        <!-- Dynamically loaded -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal" id="confirmationModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Transaction Confirmation</h3>
+                <button class="modal-close" onclick="closeModal('confirmationModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="confirmation-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="confirmation-message">
+                    <h3 id="confirmationTitle">Transaction Successful</h3>
+                    <p id="confirmationMessage">Your transaction has been processed successfully.</p>
+                    <p>Transaction ID: <span class="highlight" id="transactionId"></span></p>
+                    <p>Amount: <span class="highlight" id="transactionAmount"></span></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeModal('confirmationModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Processing Modal -->
+    <div class="modal" id="processingModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Processing Transaction</h3>
+            </div>
+            <div class="modal-body">
+                <div class="confirmation-icon">
+                    <i class="fas fa-spinner spinner"></i>
+                </div>
+                <div class="confirmation-message">
+                    <h3>Please Wait</h3>
+                    <p>Your transaction is being processed...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div class="modal" id="errorModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="errorTitle">Transaction Failed</h3>
+                <button class="modal-close" onclick="closeModal('errorModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="confirmation-icon">
+                    <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <div class="confirmation-message">
+                    <h3>Transaction Failed</h3>
+                    <p id="errorMessage">An error occurred while processing your transaction.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeModal('errorModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div class="modal" id="profileModal">
+        <div class="modal-content profile-modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Profile Details</h3>
+                <button class="modal-close" onclick="closeModal('profileModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="profile-content">
+                    <!-- Dynamically loaded profile content -->
+                </div>
+                
+                <!-- Change Password Form -->
+                <div id="change-password-form" class="change-password-form">
+                    <h4>Change Password</h4>
+                    <div class="form-group">
+                        <label for="current-password">Current Password</label>
+                        <input type="password" id="current-password" class="form-control" placeholder="Enter current password">
+                    </div>
+                    <div class="form-group">
+                        <label for="new-password">New Password</label>
+                        <input type="password" id="new-password" class="form-control" placeholder="Enter new password">
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm-password">Confirm New Password</label>
+                        <input type="password" id="confirm-password" class="form-control" placeholder="Confirm new password">
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="submitPasswordChange()">
+                            <i class="fas fa-save"></i> Update Password
+                        </button>
+                        <button class="btn btn-secondary" onclick="cancelPasswordChange()">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Change Primary Account Form -->
+                <div id="change-primary-form" class="change-primary-form">
+                    <h4>Change Primary Account</h4>
+                    <div class="form-group">
+                        <label for="new-primary-account">Select New Primary Account</label>
+                        <select id="new-primary-account" class="form-control">
+                            <!-- Dynamically loaded with non-loan accounts -->
+                        </select>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="submitPrimaryAccountChange()">
+                            <i class="fas fa-save"></i> Update Primary Account
+                        </button>
+                        <button class="btn btn-secondary" onclick="cancelPrimaryAccountChange()">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Dialog (for password/primary account changes) -->
+    <div class="overlay" id="confirmationOverlay"></div>
+    <div class="confirmation-dialog" id="confirmationDialog">
+        <h3 id="confirmationDialogTitle">Confirm Action</h3>
+        <p id="confirmationDialogMessage">Are you sure you want to perform this action?</p>
+        <div class="btn-group">
+            <button class="btn btn-secondary" onclick="cancelConfirmation()">Cancel</button>
+            <button class="btn btn-primary" id="confirmActionButton">Confirm</button>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        const urlParams = new URLSearchParams(window.location.search);
+        const user_id = urlParams.get("user_id");
+
+        if (!user_id) {
+            alert("User ID is missing. Please log in again.");
+            window.location.href = "login.html";
+        }
+
+        let customerData = null;
+        let accountsData = [];
+        let primaryAccount = null;
+        let pendingConfirmationAction = null;
+
+        // Initialize the dashboard
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadCustomerData();
+            updateProfileInitials();
+            showSection('dashboard');
+            loadDashboardContent();
+        });
+
+        // Toggle sidebar on mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
+
+        // Show section and update active menu
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Show requested section
+            document.getElementById(sectionId).style.display = 'block';
+            
+            // Update active menu item
+            document.querySelectorAll('.sidebar ul li').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            document.getElementById(`${sectionId}-link`).classList.add('active');
+            
+            // Load section-specific content
+            switch(sectionId) {
+                case 'dashboard':
+                    loadDashboardContent();
+                    break;
+                case 'transactions':
+                    loadTransactionsSection();
+                    break;
+                case 'transfer':
+                    loadTransferSection();
+                    break;
+                case 'bills':
+                    loadBillsSection();
+                    break;
+                case 'accounts':
+                    loadAccountsSection();
+                    break;
+            }
+            
+            // Close sidebar on mobile
+            if (window.innerWidth < 992) {
+                document.getElementById('sidebar').classList.remove('active');
+            }
+        }
+
+        // Show modal
+        function showModal(id) {
+            document.getElementById(id).classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        }
+
+        // Close modal
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+            document.body.style.overflow = ''; // Restore background scrolling
+        }
+
+        // Show error message
+        function showError(message) {
+            document.getElementById('errorMessage').textContent = message;
+            showModal('errorModal');
+        }
+
+        // Show success message
+        function showSuccess(title, message, transactionId = '', amount = '') {
+            document.getElementById('confirmationTitle').textContent = title;
+            document.getElementById('confirmationMessage').textContent = message;
+            document.getElementById('transactionId').textContent = transactionId || 'N/A';
+            document.getElementById('transactionAmount').textContent = amount ? `₹${amount}` : 'N/A';
+            showModal('confirmationModal');
+        }
+
+        // Format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-IN', { 
+                style: 'currency', 
+                currency: 'INR',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(amount);
+        }
+
+        // Mask account number
+        function maskAccountNumber(accountNumber) {
+            if (!accountNumber) return '';
+            const visibleDigits = 4;
+            const masked = '*'.repeat(accountNumber.length - visibleDigits);
+            return masked + accountNumber.slice(-visibleDigits);
+        }
+
+        // Show confirmation dialog
+        function showConfirmation(title, message, confirmCallback) {
+            document.getElementById('confirmationDialogTitle').textContent = title;
+            document.getElementById('confirmationDialogMessage').textContent = message;
+            
+            const confirmButton = document.getElementById('confirmActionButton');
+            confirmButton.onclick = function() {
+                hideConfirmation();
+                confirmCallback();
+            };
+            
+            document.getElementById('confirmationOverlay').classList.add('active');
+            document.getElementById('confirmationDialog').classList.add('active');
+        }
+
+        // Hide confirmation dialog
+        function hideConfirmation() {
+            document.getElementById('confirmationOverlay').classList.remove('active');
+            document.getElementById('confirmationDialog').classList.remove('active');
+        }
+
+        // Cancel confirmation
+        function cancelConfirmation() {
+            hideConfirmation();
+        }
+
+        // Logout function
+        function logout() {
+            showConfirmation(
+                "Confirm Logout", 
+                "Are you sure you want to logout?",
+                () => {
+                    // Redirect to login page
+                    window.location.href = "login.html";
+                }
+            );
+        }
+
+        // Open profile modal with customer details
+        async function openProfile() {
+            if (!customerData) return;
+            
+            // Show loading state
+            document.getElementById('profile-content').innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-spinner spinner"></i>
+                    <p>Loading profile...</p>
+                </div>
+            `;
+            
+            showModal('profileModal');
+            
+            try {
+                // Fetch the latest profile data
+                const response = await fetch(`http://localhost:5000/api/users/profile/${user_id}`);
+                if (!response.ok) throw new Error('Failed to fetch profile');
+                const profileData = await response.json();
+                
+                // Update the customer data
+                customerData = profileData;
+                
+                // Render profile details
+                renderProfileDetails(profileData);
+            } catch (error) {
+                console.error("Error loading profile:", error);
+                document.getElementById('profile-content').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>Failed to load profile details</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Render profile details in the modal
+        function renderProfileDetails(profileData) {
+            // Get initials for avatar
+            const initials = profileData.full_name ? 
+                profileData.full_name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) : 
+                'CU';
+            
+            const profileContent = document.getElementById('profile-content');
+            
+            profileContent.innerHTML = `
+                <div class="profile-header">
+                    <div class="profile-avatar">${initials}</div>
+                    <div class="profile-info-container">
+                        <h2 class="profile-name">${profileData.full_name || 'Customer'}</h2>
+                        <div class="profile-role">Customer ID: ${profileData.user_id || 'N/A'}</div>
+                    </div>
+                </div>
+                
+                <div class="profile-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Username</div>
+                        <div class="detail-value">${profileData.username || 'N/A'}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Branch ID</div>
+                        <div class="detail-value">${profileData.branch_id || 'N/A'}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Date of Birth</div>
+                        <div class="detail-value">${profileData.date_of_birth ? new Date(profileData.date_of_birth).toLocaleDateString() : 'N/A'}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Mobile Number</div>
+                        <div class="detail-value">${profileData.mobile_no || 'N/A'}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Email</div>
+                        <div class="detail-value">${profileData.email || 'N/A'}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Aadhar Number</div>
+                        <div class="detail-value">${profileData.aadhar_number || 'N/A'}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">PAN Number</div>
+                        <div class="detail-value">${profileData.PAN_number || 'N/A'}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Primary Account</div>
+                        <div class="detail-value">${profileData.primary_account ? maskAccountNumber(profileData.primary_account) : 'N/A'}</div>
+                    </div>
+                    <div class="detail-item full-width">
+                        <div class="detail-label">Address</div>
+                        <div class="detail-value">
+                            ${profileData.address?.street || ''}, 
+                            ${profileData.address?.city || ''}, 
+                            ${profileData.address?.state || ''} - 
+                            ${profileData.address?.zipCode || ''}, 
+                            ${profileData.address?.country || ''}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="profile-actions">
+                    <button class="btn btn-primary" onclick="showChangePasswordForm()">
+                        <i class="fas fa-key"></i> Change Password
+                    </button>
+                    <button class="btn btn-secondary" onclick="showChangePrimaryForm()">
+                        <i class="fas fa-exchange-alt"></i> Change Primary Account
+                    </button>
+                </div>
+            `;
+            
+            // Hide any forms that might be showing
+            document.getElementById('change-password-form').style.display = 'none';
+            document.getElementById('change-primary-form').style.display = 'none';
+        }
+
+        // Show change password form
+        function showChangePasswordForm() {
+            document.getElementById('change-password-form').style.display = 'block';
+            document.getElementById('change-primary-form').style.display = 'none';
+            
+            // Clear any previous values
+            document.getElementById('current-password').value = '';
+            document.getElementById('new-password').value = '';
+            document.getElementById('confirm-password').value = '';
+        }
+
+        // Cancel password change
+        function cancelPasswordChange() {
+            document.getElementById('change-password-form').style.display = 'none';
+            renderProfileDetails(customerData);
+        }
+
+        // Submit password change
+        async function submitPasswordChange() {
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            // Validation
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                showError("Please fill in all fields");
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                showError("New passwords do not match");
+                return;
+            }
+            
+            if (newPassword.length < 8) {
+                showError("Password must be at least 8 characters long");
+                return;
+            }
+            
+            showConfirmation(
+                "Confirm Password Change",
+                "Are you sure you want to change your password?",
+                async () => {
+                    showModal('processingModal');
+                    
+                    try {
+                        const response = await fetch('http://localhost:5000/api/users/change/password', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                user_id: user_id,
+                                oldPassword: currentPassword,
+                                newPassword: newPassword
+                            })
+                        });
+                        
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.message || "Password change failed");
+                        }
+                        
+                        closeModal('processingModal');
+                        showSuccess("Password Changed", "Your password has been updated successfully.");
+                        cancelPasswordChange();
+                    } catch (error) {
+                        console.error("Error changing password:", error);
+                        closeModal('processingModal');
+                        showError(error.message || "Failed to change password");
+                    }
+                }
+            );
+        }
+
+        // Show change primary account form
+        async function showChangePrimaryForm() {
+            document.getElementById('change-primary-form').style.display = 'block';
+            document.getElementById('change-password-form').style.display = 'none';
+            
+            // Load eligible accounts
+            try {
+                const response = await fetch(`http://localhost:5000/api/accounts/all/${user_id}`);
+                if (!response.ok) throw new Error('Failed to fetch accounts');
+                const accounts = await response.json();
+                
+                // Filter out loan accounts and current primary account
+                const eligibleAccounts = accounts.filter(account => 
+                    account.account_type !== 'loan' && 
+                    account.account_number !== customerData.primary_account &&
+                    account.is_verified
+                );
+                
+                const selectElement = document.getElementById('new-primary-account');
+                selectElement.innerHTML = '';
+                
+                if (eligibleAccounts.length === 0) {
+                    selectElement.innerHTML = '<option value="">No eligible accounts found</option>';
+                    return;
+                }
+                
+                eligibleAccounts.forEach(account => {
+                    const option = document.createElement('option');
+                    option.value = account.account_number;
+                    option.textContent = `${account.account_type.toUpperCase()} - ${maskAccountNumber(account.account_number)} (${formatCurrency(account.balance)})`;
+                    selectElement.appendChild(option);
+                });
+            } catch (error) {
+                console.error("Error loading accounts:", error);
+                document.getElementById('new-primary-account').innerHTML = '<option value="">Failed to load accounts</option>';
+            }
+        }
+
+        // Cancel primary account change
+        function cancelPrimaryAccountChange() {
+            document.getElementById('change-primary-form').style.display = 'none';
+            renderProfileDetails(customerData);
+        }
+
+        // Submit primary account change
+        async function submitPrimaryAccountChange() {
+            const newPrimaryAccount = document.getElementById('new-primary-account').value;
+            
+            if (!newPrimaryAccount) {
+                showError("Please select an account");
+                return;
+            }
+            
+            showConfirmation(
+                "Confirm Primary Account Change",
+                "Are you sure you want to change your primary account? All future transactions will use this account by default.",
+                async () => {
+                    showModal('processingModal');
+                    
+                    try {
+                        const response = await fetch('http://localhost:5000/api/users/change/primary', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                user_id: user_id,
+                                account_number: newPrimaryAccount
+                            })
+                        });
+                        
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.message || "Primary account change failed");
+                        }
+                        
+                        // Update local data
+                        customerData.primary_account = newPrimaryAccount;
+                        primaryAccount = accountsData.find(account => account.account_number === newPrimaryAccount);
+                        
+                        closeModal('processingModal');
+                        showSuccess("Primary Account Changed", "Your primary account has been updated successfully.");
+                        cancelPrimaryAccountChange();
+                        renderProfileDetails(customerData);
+                        
+                        // Refresh dashboard to reflect changes
+                        loadDashboardContent();
+                    } catch (error) {
+                        console.error("Error changing primary account:", error);
+                        closeModal('processingModal');
+                        showError(error.message || "Failed to change primary account");
+                    }
+                }
+            );
+        }
+
+        // Load customer data
+        async function loadCustomerData() {
+            try {
+                // Fetch customer profile
+                const profileResponse = await fetch(`http://localhost:5000/api/users/profile/${user_id}`);
+                if (!profileResponse.ok) throw new Error('Failed to fetch profile');
+                customerData = await profileResponse.json();
+                
+                // Update profile display
+                document.getElementById('customer-name').textContent = customerData.full_name;
+                document.getElementById('profile-name').textContent = customerData.full_name;
+                
+                // Fetch customer accounts
+                const accountsResponse = await fetch(`http://localhost:5000/api/accounts/all/${user_id}`);
+                if (!accountsResponse.ok) throw new Error('Failed to fetch accounts');
+                accountsData = await accountsResponse.json();
+                
+                // Find primary account
+                primaryAccount = accountsData.find(account => 
+                    account.account_number === customerData.primary_account && 
+                    account.is_verified
+                ) || accountsData.find(account => account.is_verified);
+            } catch (error) {
+                console.error("Error loading customer data:", error);
+                showError("Failed to load customer data. Please try again later.");
+            }
+        }
+
+        // Update profile initials
+        function updateProfileInitials() {
+            if (customerData && customerData.full_name) {
+                const initials = customerData.full_name.split(' ').map(n => n[0]).join('').toUpperCase();
+                document.getElementById('profile-initials').textContent = initials.substring(0, 2);
+            }
+        }
+
+        // Load dashboard content
+        async function loadDashboardContent() {
+            if (!customerData) return;
+            
+            // Update account summary
+            const accountSummary = document.getElementById('account-summary');
+            accountSummary.innerHTML = '';
+            
+            // Check if user has any verified accounts
+            const verifiedAccounts = accountsData.filter(account => account.is_verified);
+            
+            if (verifiedAccounts.length === 0) {
+                accountSummary.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <i class="fas fa-wallet"></i>
+                        <h3>No Accounts Found</h3>
+                        <p>You don't have any verified accounts yet.</p>
+                        <button class="btn btn-primary" onclick="showSection('accounts')">
+                            <i class="fas fa-plus"></i> Open New Account
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            verifiedAccounts.forEach(account => {
+                const accountCard = document.createElement('div');
+                accountCard.className = 'account-card';
+                accountCard.innerHTML = `
+                    <div class="account-type">${account.account_type.toUpperCase()} ACCOUNT</div>
+                    <div class="account-number">
+                        <span>${maskAccountNumber(account.account_number)}</span>
+                        <span class="verification-status verified">Verified</span>
+                    </div>
+                    <div class="account-balance">${formatCurrency(account.balance)}</div>
+                    <div class="account-details">
+                        <span>${account.account_number === primaryAccount?.account_number ? 'Primary' : ''}</span>
+                        <span>${new Date(account.opening_date).toLocaleDateString()}</span>
+                    </div>
+                `;
+                accountSummary.appendChild(accountCard);
+            });
+            
+            // Load recent transactions if there's a primary account
+            if (primaryAccount) {
+                await loadRecentTransactions();
+            } else {
+                document.getElementById('recent-transactions').innerHTML = `
+                    <tr>
+                        <td colspan="5" class="empty-state">
+                            <i class="fas fa-exchange-alt"></i>
+                            <p>No primary account set</p>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Load recent transactions
+        async function loadRecentTransactions() {
+            if (!primaryAccount) return;
+            
+            try {
+                const response = await fetch(`http://localhost:5000/api/transactions/last5/${primaryAccount.account_number}`);
+                if (!response.ok) throw new Error('Failed to fetch transactions');
+                const transactions = await response.json();
+                
+                const transactionsTable = document.getElementById('recent-transactions');
+                transactionsTable.innerHTML = '';
+                
+                if (transactions.length === 0) {
+                    transactionsTable.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="empty-state">
+                                <i class="fas fa-exchange-alt"></i>
+                                <p>No recent transactions</p>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                transactions.forEach(transaction => {
+                    const row = document.createElement('tr');
+                    const date = new Date(transaction.transaction_date).toLocaleDateString();
+                    const amountClass = transaction.transaction_type === 'credit' ? 'text-success' : 'text-danger';
+                    const amountSign = transaction.transaction_type === 'credit' ? '+' : '-';
+                    
+                    row.innerHTML = `
+                        <td>${date}</td>
+                        <td>${transaction.description || 'N/A'}</td>
+                        <td>${transaction.transaction_type}</td>
+                       <td class="amount ${amountClass}">${amountSign}${formatCurrency(transaction.amount)}</td>
+                        <td><span class="badge badge-success">Completed</span></td>
+                    `;
+                    transactionsTable.appendChild(row);
+                });
+            } catch (error) {
+                console.error("Error loading recent transactions:", error);
+                const transactionsTable = document.getElementById('recent-transactions');
+                transactionsTable.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="empty-state">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <p>Failed to load transactions</p>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Load transactions section
+        async function loadTransactionsSection() {
+    try {
+        if (!accountsData || !accountsData.length) {
+            console.warn("No accounts data available");
+            return;
+        }
+        
+        // Populate account dropdown
+        const accountSelect = document.getElementById('transaction-account');
+        accountSelect.innerHTML = '';
+        
+        const verifiedAccounts = accountsData.filter(account => account.is_verified);
+        
+        if (verifiedAccounts.length === 0) {
+            accountSelect.innerHTML = '<option value="">No verified accounts found</option>';
+            document.getElementById('transaction-history').innerHTML = `
+                <tr>
+                    <td colspan="6" class="empty-state">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>No verified accounts available</p>
+                    </td>
+                </tr>`;
+            return;
+        }
+        
+        verifiedAccounts.forEach(account => {
+            const option = document.createElement('option');
+            option.value = account.account_number;
+            option.textContent = `${account.account_type.toUpperCase()} - ${maskAccountNumber(account.account_number)} (${formatCurrency(account.balance)})`;
+            if (account.account_number === primaryAccount?.account_number) {
+                option.selected = true;
+            }
+            accountSelect.appendChild(option);
+        });
+        
+        // Set default date range (last 30 days)
+        const endDate = new Date();
+        const startDate = new Date();
+        startDate.setDate(startDate.getDate() - 30);
+        
+        document.getElementById('start-date').valueAsDate = startDate;
+        document.getElementById('end-date').valueAsDate = endDate;
+        
+        // Fetch initial transactions if there's a selected account
+        if (accountSelect.value) {
+            await fetchTransactions();
+        }
+    } catch (error) {
+        console.error("Error loading transactions section:", error);
+        showError("Failed to initialize transactions section");
+    }
+}
+
+async function fetchTransactions() {
+    const accountNumber = document.getElementById('transaction-account').value;
+    const transactionType = document.getElementById('transaction-type').value;
+    const startDate = document.getElementById('start-date').value;
+    const endDate = document.getElementById('end-date').value;
+
+    
+    
+    if (!accountNumber) {
+        showError("Please select an account");
+        return;
+    }
+    
+    showModal('processingModal');
+    
+    try {
+        // Validate date range if both dates are provided
+        if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+            throw new Error("End date cannot be before start date");
+        }
+        
+        const params = new URLSearchParams();
+        if (startDate) params.append('start', startDate);
+        if (endDate) params.append('end', endDate);
+        if (transactionType && transactionType !== 'all') {
+            params.append('transaction_type', transactionType);
+        }
+
+        
+        const url = `http://localhost:5000/api/transactions/all/${accountNumber}?${params.toString()}`;
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.message || 'Failed to fetch transactions');
+        }
+        
+        const transactions = await response.json();
+        const transactionsTable = document.getElementById('transaction-history');
+        transactionsTable.innerHTML = '';
+        
+        if (!transactions || transactions.length === 0) {
+            transactionsTable.innerHTML = `
+                <tr>
+                    <td colspan="6" class="empty-state">
+                        <i class="fas fa-exchange-alt"></i>
+                        <p>No transactions found for selected criteria</p>
+                    </td>
+                </tr>`;
+            return;
+        }
+        
+        // Sort transactions by date (newest first) if not already sorted by backend
+        transactions.sort((a, b) => new Date(b.transaction_date) - new Date(a.transaction_date));
+        
+        transactions.forEach(transaction => {
+            const row = document.createElement('tr');
+            const date = new Date(transaction.transaction_date).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            const amountClass = transaction.transaction_type === 'credit' ? 'text-success' : 'text-danger';
+            const amountSign = transaction.transaction_type === 'credit' ? '+' : '-';
+            
+            let statusBadge = '';
+            switch (transaction.status) {
+                case 'completed':
+                    statusBadge = '<span class="badge badge-success">Completed</span>';
+                    break;
+                case 'pending':
+                    statusBadge = '<span class="badge badge-warning">Pending</span>';
+                    break;
+                case 'failed':
+                    statusBadge = '<span class="badge badge-danger">Failed</span>';
+                    break;
+                default:
+                    statusBadge = `<span class="badge badge-secondary">${transaction.status || 'Unknown'}</span>`;
+            }
+            
+            row.innerHTML = `
+                <td>${date}</td>
+                <td class="font-monospace">${transaction.transaction_id}</td>
+                <td>${transaction.description || 'N/A'}</td>
+                <td class="text-capitalize">${transaction.transaction_type}</td>
+                <td class="amount ${amountClass}">${amountSign}${formatCurrency(transaction.amount)}</td>
+                <td>${statusBadge}</td>
+            `;
+            transactionsTable.appendChild(row);
+        });
+    } catch (error) {
+        console.error("Error fetching transactions:", error);
+        showError(error.message || "Failed to load transactions. Please try again.");
+    } finally {
+        closeModal('processingModal');
+    }
+}
+
+        // Generate statement
+        async function generateStatement() {
+            const accountNumber = document.getElementById('transaction-account').value;
+            const startDate = document.getElementById('start-date').value;
+            const endDate = document.getElementById('end-date').value;
+            
+            if (!accountNumber) {
+                showError("Please select an account");
+                return;
+            }
+
+            // Validate date range if both dates are provided
+            if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+                showError("End date must be after start date");
+                return;
+            }
+
+            showModal('processingModal');
+            
+            try {
+                let url = `http://localhost:5000/api/accounts/statement/${accountNumber}`;
+                const params = [];
+                
+                if (startDate) params.push(`start=${encodeURIComponent(startDate)}`);
+                if (endDate) params.push(`end=${encodeURIComponent(endDate)}`);
+                
+                if (params.length) {
+                    url += `?${params.join('&')}`;
+                }
+                
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    // Try to get error message from response body
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.message || 'Failed to generate statement');
+                }
+
+                // Check if response is actually a PDF
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/pdf')) {
+                    throw new Error('Server returned non-PDF response');
+                }
+                
+                const blob = await response.blob();
+                const urlObj = window.URL.createObjectURL(blob);
+                
+                // Create a more descriptive filename with dates if available
+                let filename = `BankPro_Statement_${accountNumber}`;
+                if (startDate && endDate) {
+                    const startFormatted = formatDateForFilename(startDate);
+                    const endFormatted = formatDateForFilename(endDate);
+                    filename += `_${startFormatted}_to_${endFormatted}`;
+                }
+                filename += '.pdf';
+                
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = urlObj;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                
+                // Clean up
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(urlObj);
+                    closeModal('processingModal');
+                }, 100);
+                
+            } catch (error) {
+                console.error("Error generating statement:", error);
+                closeModal('processingModal');
+                showError(error.message || "Failed to generate statement. Please try again.");
+            }
+        }
+
+        // Helper function to format dates for filename (YYYY-MM-DD)
+        function formatDateForFilename(dateString) {
+            const date = new Date(dateString);
+            return date.toISOString().split('T')[0].replace(/-/g, '');
+        }
+
+        // Load transfer section
+        async function loadTransferSection() {
+            if (!accountsData.length) return;
+            
+            // Populate from account dropdown
+            const fromAccountSelect = document.getElementById('from-account');
+            fromAccountSelect.innerHTML = '';
+            
+            const verifiedAccounts = accountsData.filter(account => account.is_verified);
+            
+            if (verifiedAccounts.length === 0) {
+                fromAccountSelect.innerHTML = '<option value="">No verified accounts available</option>';
+                return;
+            }
+            
+            verifiedAccounts.forEach(account => {
+                const option = document.createElement('option');
+                option.value = account.account_number;
+                option.textContent = `${account.account_type.toUpperCase()} - ${maskAccountNumber(account.account_number)} (${formatCurrency(account.balance)})`;
+                if (account.account_number === primaryAccount?.account_number) {
+                    option.selected = true;
+                }
+                fromAccountSelect.appendChild(option);
+            });
+        }
+
+        // Initiate transfer
+        async function initiateTransfer() {
+            const fromAccount = document.getElementById('from-account').value;
+            const toAccount = document.getElementById('to-account').value;
+            const confirmAccount = document.getElementById('confirm-account').value;
+            const amount = parseFloat(document.getElementById('transfer-amount').value);
+            const method = document.getElementById('transfer-method').value;
+            const remarks = document.getElementById('transfer-remarks').value;
+            
+            // Validation
+            if (!fromAccount || !toAccount || !amount) {
+                showError("Please fill in all required fields");
+                return;
+            }
+            
+            if (toAccount !== confirmAccount) {
+                showError("Account numbers do not match");
+                return;
+            }
+            
+            if (amount <= 0) {
+                showError("Amount must be greater than 0");
+                return;
+            }
+            
+            showConfirmation(
+                "Confirm Transfer",
+                `Are you sure you want to transfer ₹${amount.toFixed(2)} to account ${maskAccountNumber(toAccount)}?`,
+                async () => {
+                    showModal('processingModal');
+                    
+                    try {
+                        const response = await fetch("http://localhost:5000/api/transactions/transfer", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                account_number: fromAccount,
+                                recipient_account_number: toAccount,
+                                amount: amount,
+                                transaction_method: method,
+                                description: remarks || "Fund Transfer"
+                            })
+                        });
+                        
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.message || "Transfer failed");
+                        }
+                        
+                        const data = await response.json();
+                        closeModal('processingModal');
+                        showSuccess("Transfer Successful", "Your funds have been transferred successfully.", data.transaction_id, amount);
+                        
+                        // Refresh data
+                        await loadCustomerData();
+                        loadDashboardContent();
+                        loadTransferSection();
+                    } catch (error) {
+                        console.error("Transfer error:", error);
+                        closeModal('processingModal');
+                        showError(error.message || "Failed to complete transfer");
+                    }
+                }
+            );
+        }
+
+        // Load bills section
+        function loadBillsSection() {
+            // Already initialized by the HTML
+        }
+
+        // Show bill form
+        function showBillForm(category) {
+            const container = document.getElementById('bill-form-container');
+            container.style.display = 'block';
+            
+            let formHTML = '';
+            
+            switch(category) {
+                case 'mobile':
+                    formHTML = `
+                        <div class="card-header">
+                            <h3 class="card-title">Mobile Recharge</h3>
+                        </div>
+                        <div class="form-group">
+                            <label for="bill-account">From Account</label>
+                            <select id="bill-account" class="form-control">
+                                ${accountsData.filter(a => a.is_verified).map(account => `
+                                    <option value="${account.account_number}" ${account.account_number === primaryAccount?.account_number ? 'selected' : ''}>
+                                        ${account.account_type.toUpperCase()} - ${maskAccountNumber(account.account_number)}
+                                    </option>
+                                `).join('')}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="mobile-provider">Provider</label>
+                            <select id="mobile-provider" class="form-control">
+                                <option value="jio">Jio</option>
+                                <option value="airtel">Airtel</option>
+                                <option value="vi">Vi</option>
+                                <option value="bsnl">BSNL</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="mobile-number">Mobile Number</label>
+                            <input type="tel" id="mobile-number" class="form-control" placeholder="Enter mobile number">
+                        </div>
+                        <div class="form-group">
+                            <label for="mobile-amount">Amount (₹)</label>
+                            <input type="number" id="mobile-amount" class="form-control" placeholder="Enter amount">
+                        </div>
+                        <button class="btn btn-primary" onclick="payBill('mobile')">
+                            <i class="fas fa-mobile-alt"></i> Recharge Now
+                        </button>
+                    `;
+                    break;
+                    
+                case 'electricity':
+                    formHTML = `
+                        <div class="card-header">
+                            <h3 class="card-title">Electricity Bill Payment</h3>
+                        </div>
+                        <div class="form-group">
+                            <label for="bill-account">From Account</label>
+                            <select id="bill-account" class="form-control">
+                                ${accountsData.filter(a => a.is_verified).map(account => `
+                                    <option value="${account.account_number}" ${account.account_number === primaryAccount?.account_number ? 'selected' : ''}>
+                                        ${account.account_type.toUpperCase()} - ${maskAccountNumber(account.account_number)}
+                                    </option>
+                                `).join('')}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="electricity-provider">Provider</label>
+                            <select id="electricity-provider" class="form-control">
+                                <option value="adani">Adani Electricity</option>
+                                <option value="tata">Tata Power</option>
+                                <option value="reliance">Reliance Energy</option>
+                                <option value="bescom">BESCOM</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="consumer-number">Consumer Number</label>
+                            <input type="text" id="consumer-number" class="form-control" placeholder="Enter consumer number">
+                        </div>
+                        <div class="form-group">
+                            <label for="electricity-amount">Amount (₹)</label>
+                            <input type="number" id="electricity-amount" class="form-control" placeholder="Enter amount">
+                        </div>
+                        <button class="btn btn-primary" onclick="payBill('electricity')">
+                            <i class="fas fa-bolt"></i> Pay Now
+                        </button>
+                    `;
+                    break;
+                    
+                case 'creditcard':
+                    formHTML = `
+                        <div class="card-header">
+                            <h3 class="card-title">Credit Card Payment</h3>
+                        </div>
+                        <div class="form-group">
+                            <label for="bill-account">From Account</label>
+                            <select id="bill-account" class="form-control">
+                                ${accountsData.filter(a => a.is_verified).map(account => `
+                                    <option value="${account.account_number}" ${account.account_number === primaryAccount?.account_number ? 'selected' : ''}>
+                                        ${account.account_type.toUpperCase()} - ${maskAccountNumber(account.account_number)}
+                                    </option>
+                                `).join('')}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="card-provider">Card Provider</label>
+                            <select id="card-provider" class="form-control">
+                                <option value="hdfc">HDFC Bank</option>
+                                <option value="icici">ICICI Bank</option>
+                                <option value="sbi">SBI Card</option>
+                                <option value="axis">Axis Bank</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="card-number">Card Number</label>
+                            <input type="text" id="card-number" class="form-control" placeholder="Enter card number">
+                        </div>
+                        <div class="form-group">
+                            <label for="card-amount">Amount (₹)</label>
+                            <input type="number" id="card-amount" class="form-control" placeholder="Enter amount">
+                        </div>
+                        <button class="btn btn-primary" onclick="payBill('creditcard')">
+                            <i class="fas fa-credit-card"></i> Pay Now
+                        </button>
+                    `;
+                    break;
+                    
+                case 'dth':
+                    formHTML = `
+                        <div class="card-header">
+                            <h3 class="card-title">DTH Recharge</h3>
+                        </div>
+                        <div class="form-group">
+                            <label for="bill-account">From Account</label>
+                            <select id="bill-account" class="form-control">
+                                ${accountsData.filter(a => a.is_verified).map(account => `
+                                    <option value="${account.account_number}" ${account.account_number === primaryAccount?.account_number ? 'selected' : ''}>
+                                        ${account.account_type.toUpperCase()} - ${maskAccountNumber(account.account_number)}
+                                    </option>
+                                `).join('')}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="dth-provider">Provider</label>
+                            <select id="dth-provider" class="form-control">
+                                <option value="tata_sky">Tata Sky</option>
+                                <option value="airtel">Airtel DTH</option>
+                                <option value="dish_tv">Dish TV</option>
+                                <option value="sun_direct">Sun Direct</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="subscriber-id">Subscriber ID</label>
+                            <input type="text" id="subscriber-id" class="form-control" placeholder="Enter subscriber ID">
+                        </div>
+                        <div class="form-group">
+                            <label for="dth-amount">Amount (₹)</label>
+                            <input type="number" id="dth-amount" class="form-control" placeholder="Enter amount">
+                        </div>
+                        <button class="btn btn-primary" onclick="payBill('dth')">
+                            <i class="fas fa-tv"></i> Recharge Now
+                        </button>
+                    `;
+                    break;
+                    
+                case 'broadband':
+                    formHTML = `
+                        <div class="card-header">
+                            <h3 class="card-title">Broadband Bill Payment</h3>
+                        </div>
+                        <div class="form-group">
+                            <label for="bill-account">From Account</label>
+                            <select id="bill-account" class="form-control">
+                                ${accountsData.filter(a => a.is_verified).map(account => `
+                                    <option value="${account.account_number}" ${account.account_number === primaryAccount?.account_number ? 'selected' : ''}>
+                                        ${account.account_type.toUpperCase()} - ${maskAccountNumber(account.account_number)}
+                                    </option>
+                                `).join('')}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="broadband-provider">Provider</label>
+                            <select id="broadband-provider" class="form-control">
+                                <option value="airtel">Airtel Broadband</option>
+                                <option value="jio">Jio Fiber</option>
+                                <option value="bsnl">BSNL Broadband</option>
+                                <option value="act">ACT Fibernet</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="customer-id">Customer ID</label>
+                            <input type="text" id="customer-id" class="form-control" placeholder="Enter customer ID">
+                        </div>
+                        <div class="form-group">
+                            <label for="broadband-amount">Amount (₹)</label>
+                            <input type="number" id="broadband-amount" class="form-control" placeholder="Enter amount">
+                        </div>
+                        <button class="btn btn-primary" onclick="payBill('broadband')">
+                            <i class="fas fa-wifi"></i> Pay Now
+                        </button>
+                    `;
+                    break;
+                    
+                default:
+                    formHTML = '<p>Bill category not implemented yet</p>';
+            }
+            
+            container.innerHTML = formHTML;
+        }
+
+        // Pay bill
+        async function payBill(category) {
+            const accountNumber = document.getElementById('bill-account').value;
+            let amount = 0;
+            let billDetails = {};
+            let confirmationMessage = '';
+            
+            switch(category) {
+                case 'mobile':
+                    amount = parseFloat(document.getElementById('mobile-amount').value);
+                    billDetails = {
+                        provider: document.getElementById('mobile-provider').value,
+                        mobile_number: document.getElementById('mobile-number').value
+                    };
+                    confirmationMessage = `Are you sure you want to recharge mobile number ${billDetails.mobile_number} with ₹${amount.toFixed(2)}?`;
+                    break;
+                    
+                case 'electricity':
+                    amount = parseFloat(document.getElementById('electricity-amount').value);
+                    billDetails = {
+                        provider: document.getElementById('electricity-provider').value,
+                        consumer_number: document.getElementById('consumer-number').value
+                    };
+                    confirmationMessage = `Are you sure you want to pay ₹${amount.toFixed(2)} for electricity bill (Consumer No: ${billDetails.consumer_number})?`;
+                    break;
+                    
+                case 'creditcard':
+                    amount = parseFloat(document.getElementById('card-amount').value);
+                    billDetails = {
+                        provider: document.getElementById('card-provider').value,
+                        credit_card_number: document.getElementById('card-number').value
+                    };
+                    confirmationMessage = `Are you sure you want to pay ₹${amount.toFixed(2)} for credit card (${maskAccountNumber(billDetails.card_number)})?`;
+                    break;
+                    
+                case 'dth':
+                    amount = parseFloat(document.getElementById('dth-amount').value);
+                    billDetails = {
+                        provider: document.getElementById('dth-provider').value,
+                        dth_number: document.getElementById('subscriber-id').value
+                    };
+                    confirmationMessage = `Are you sure you want to recharge DTH (Subscriber ID: ${billDetails.subscriber_id}) with ₹${amount.toFixed(2)}?`;
+                    break;
+                    
+                case 'broadband':
+                    amount = parseFloat(document.getElementById('broadband-amount').value);
+                    billDetails = {
+                        provider: document.getElementById('broadband-provider').value,
+                        broadband_number: document.getElementById('customer-id').value
+                    };
+                    confirmationMessage = `Are you sure you want to pay ₹${amount.toFixed(2)} for broadband bill (Customer ID: ${billDetails.customer_id})?`;
+                    break;
+                    
+                default:
+                    showError("This bill category is not implemented yet");
+                    return;
+            }
+            
+            if (!amount || amount <= 0) {
+                showError("Please enter a valid amount");
+                return;
+            }
+            
+            showConfirmation(
+                `Confirm ${category.charAt(0).toUpperCase() + category.slice(1)} Payment`,
+                confirmationMessage,
+                async () => {
+                    showModal('processingModal');
+                    
+                    try {
+                        const response = await fetch(`http://localhost:5000/api/transactions/payBill/${category}`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                account_number: accountNumber,
+                                amount: amount,
+                                ...billDetails
+                            })
+                        });
+                        
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.message || "Bill payment failed");
+                        }
+                        
+                        const data = await response.json();
+                        closeModal('processingModal');
+                        
+                        let successMessage = "";
+                        switch(category) {
+                            case 'mobile':
+                                successMessage = `Your mobile recharge of ₹${amount.toFixed(2)} was successful.`;
+                                break;
+                            case 'electricity':
+                                successMessage = `Your electricity bill payment of ₹${amount.toFixed(2)} was successful.`;
+                                break;
+                            case 'creditcard':
+                                successMessage = `Your credit card payment of ₹${amount.toFixed(2)} was successful.`;
+                                break;
+                            case 'dth':
+                                successMessage = `Your DTH recharge of ₹${amount.toFixed(2)} was successful.`;
+                                break;
+                            case 'broadband':
+                                successMessage = `Your broadband bill payment of ₹${amount.toFixed(2)} was successful.`;
+                                break;
+                            default:
+                                successMessage = "Your payment was successful.";
+                        }
+                        
+                        showSuccess("Payment Successful", successMessage, data.transaction_id, amount);
+                        
+                        // Refresh data
+                        await loadCustomerData();
+                        loadDashboardContent();
+                    } catch (error) {
+                        console.error("Bill payment error:", error);
+                        closeModal('processingModal');
+                        showError(error.message || "Failed to complete payment");
+                    }
+                }
+            );
+        }
+
+        // Load accounts section
+        function loadAccountsSection() {
+            const accountsTable = document.getElementById('accounts-list');
+            accountsTable.innerHTML = '';
+            
+            if (accountsData.length === 0) {
+                accountsTable.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="empty-state">
+                            <i class="fas fa-wallet"></i>
+                            <p>No accounts found</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            accountsData.forEach(account => {
+                const row = document.createElement('tr');
+                const status = account.is_verified ? 
+                    '<span class="verification-status verified">Verified</span>' : 
+                    '<span class="verification-status unverified">Pending</span>';
+                
+                row.innerHTML = `
+                    <td>${maskAccountNumber(account.account_number)}</td>
+                    <td>${account.account_type.toUpperCase()}</td>
+                    <td class="amount">${formatCurrency(account.balance)}</td>
+                    <td>${status}</td>
+                    <td>
+                        <button class="btn btn-secondary" onclick="viewAccountDetails('${account.account_number}')">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                    </td>
+                `;
+                accountsTable.appendChild(row);
+            });
+        }
+
+        // View account details
+async function viewAccountDetails(accountNumber) {
+    const account = accountsData.find(acc => acc.account_number === accountNumber);
+    if (!account) return;
+
+    // Fetch user details
+    const user = await fetch(`http://localhost:5000/api/users/profile/${user_id}`).then(res => res.json()).catch(() => null);
+    if (!user) return;
+
+    // Fetch branch details
+    let branchDetails = {};
+    try {
+        const response = await fetch(`http://localhost:5000/api/branch/${user.branch_id}`);
+        if (response.ok) {
+            branchDetails = await response.json();
+        }
+    } catch (error) {
+        console.error("Error fetching branch details:", error);
+    }
+
+    // Format address if available
+    let formattedAddress = 'N/A';
+    if (branchDetails.address) {
+        const addr = branchDetails.address;
+        formattedAddress = `
+            ${addr.street || ''}<br>
+            ${addr.city || ''}, ${addr.state || ''} ${addr.zipCode || ''}<br>
+            ${addr.country || ''}
+        `.trim();
+    }
+
+    // Fetch loan details if account type is loan
+    let loanDetails = null;
+    if (account.account_type.toLowerCase() === 'loan') {
+        try {
+            const response = await fetch(`http://localhost:5000/api/loan/${accountNumber}`);
+            if (response.ok) {
+                loanDetails = await response.json();
+            }
+        } catch (error) {
+            console.error("Error fetching loan details:", error);
+        }
+    }
+
+    document.getElementById('account-details-title').textContent = `Account Details - ${accountNumber}`;
+    
+    const detailsContent = document.getElementById('account-details-content');
+    detailsContent.innerHTML = `
+        <div class="form-row">
+            <div class="form-col">
+                <div class="form-group">
+                    <label>Account Type</label>
+                    <div class="form-control-static">${account.account_type.toUpperCase()}</div>
+                </div>
+            </div>
+            <div class="form-col">
+                <div class="form-group">
+                    <label>Account Status</label>
+                    <div class="form-control-static">
+                        ${account.is_verified ? 
+                            '<span class="verification-status verified">Verified</span>' : 
+                            '<span class="verification-status unverified">Pending Verification</span>'}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-col">
+                <div class="form-group">
+                    <label>Current Balance</label>
+                    <div class="form-control-static">${formatCurrency(account.balance)}</div>
+                </div>
+            </div>
+            <div class="form-col">
+                <div class="form-group">
+                    <label>Interest Rate</label>
+                    <div class="form-control-static">${account.interest_rate}%</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>Opening Date</label>
+            <div class="form-control-static">${new Date(account.opening_date).toLocaleDateString()}</div>
+        </div>
+        
+        <div class="form-group">
+            <label>Branch Details</label>
+            <div class="form-control-static">
+                ${branchDetails.branch_name || 'N/A'}<br>
+                ${formattedAddress}<br>
+                IFSC: ${branchDetails.ifsc_code || 'N/A'}
+            </div>
+        </div>
+        
+        ${account.account_type.toLowerCase() === 'loan' && loanDetails ? `
+        <div class="loan-details-section">
+            <h4>Loan Details</h4>
+            <div class="form-row">
+                <div class="form-col">
+                    <div class="form-group">
+                        <label>Loan Type</label>
+                        <div class="form-control-static">${loanDetails.loan_type || 'N/A'}</div>
+                    </div>
+                </div>
+                <div class="form-col">
+                    <div class="form-group">
+                        <label>Loan Term</label>
+                        <div class="form-control-static">${loanDetails.term_months || 'N/A'} months</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-col">
+                    <div class="form-group">
+                        <label>Monthly Payment</label>
+                        <div class="form-control-static">${loanDetails.monthly_payment ? formatCurrency(loanDetails.monthly_payment) : 'N/A'}</div>
+                    </div>
+                </div>
+                <div class="form-col">
+                    <div class="form-group">
+                        <label>Due Date</label>
+                        <div class="form-control-static">${loanDetails.due_date ? new Date(loanDetails.due_date).toLocaleDateString() : 'N/A'}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Collateral</label>
+                <div class="form-control-static">
+                    <strong>Type:</strong> ${loanDetails.collateral?.type || 'N/A'}<br>
+                    <strong>Value:</strong> ${loanDetails.collateral?.estimated_value ? formatCurrency(loanDetails.collateral.estimated_value) : 'N/A'}<br>
+                    <strong>Description:</strong> ${loanDetails.collateral?.description || 'N/A'}
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Loan Status</label>
+                <div class="form-control-static">
+                    ${loanDetails.status ? loanDetails.status.charAt(0).toUpperCase() + loanDetails.status.slice(1) : 'N/A'}
+                </div>
+            </div>
+        </div>
+        ` : ''}
+        
+        <div class="btn-group">
+            <button class="btn btn-secondary" onclick="hideAccountDetails()">
+                <i class="fas fa-arrow-left"></i> Back
+            </button>
+            ${account.is_verified ? `
+            <button class="btn btn-primary" onclick="downloadAccountStatement('${accountNumber}')">
+                <i class="fas fa-file-pdf"></i> Download Statement
+            </button>
+            ` : ''}
+        </div>
+    `;
+    
+    document.getElementById('account-details').style.display = 'block';
+    document.getElementById('new-account-form').style.display = 'none';
+}
+        // Hide account details
+        function hideAccountDetails() {
+            document.getElementById('account-details').style.display = 'none';
+        }
+
+        // Show new account form
+        function showNewAccountForm() {
+            document.getElementById('new-account-form').style.display = 'block';
+            document.getElementById('account-details').style.display = 'none';
+        }
+
+        // Hide new account form
+        function hideNewAccountForm() {
+            document.getElementById('new-account-form').style.display = 'none';
+        }
+
+        // Submit new account
+        async function submitNewAccount() {
+            const accountType = document.getElementById('new-account-type').value;
+            const initialDeposit = parseFloat(document.getElementById('initial-deposit').value);
+            
+            if (!accountType) {
+                showError("Please select an account type");
+                return;
+            }
+            
+            if (!initialDeposit || initialDeposit <= 0) {
+                showError("Please enter a valid initial deposit amount");
+                return;
+            }
+            
+            showConfirmation(
+                "Confirm New Account",
+                `Are you sure you want to open a new ${accountType} account with an initial deposit of ₹${initialDeposit.toFixed(2)}?`,
+                async () => {
+                    showModal('processingModal');
+                    
+                    try {
+                        const response = await fetch(`http://localhost:5000/api/accounts/create/${user_id}`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                account_type: accountType,
+                                balance: initialDeposit,
+                                interest_rate: accountType === 'savings' ? 3.5 : 0 // Example interest rates
+                            })
+                        });
+                        
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.message || "Account creation failed");
+                        }
+                        
+                        const data = await response.json();
+                        closeModal('processingModal');
+                        showSuccess("Account Created", "Your new account has been created successfully.", data.account_number);
+                        
+                        // Refresh accounts data
+                        await loadCustomerData();
+                        loadAccountsSection();
+                        hideNewAccountForm();
+                    } catch (error) {
+                        console.error("Account creation error:", error);
+                        closeModal('processingModal');
+                        showError(error.message || "Failed to create account");
+                    }
+                }
+            );
+        }
+
+        // Download account statement
+        async function downloadAccountStatement(accountNumber) {
+            if (!accountNumber) return;
+            
+            showModal('processingModal');
+            
+            try {
+                const response = await fetch(`http://localhost:5000/api/accounts/statement/${accountNumber}`);
+                if (!response.ok) throw new Error('Failed to generate statement');
+                
+                const blob = await response.blob();
+                const urlObj = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = urlObj;
+                a.download = `statement_${accountNumber}.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(urlObj);
+                
+                closeModal('processingModal');
+            } catch (error) {
+                console.error("Error generating statement:", error);
+                closeModal('processingModal');
+                showError("Failed to generate statement. Please try again.");
+            }
+        }
+    </script>
+</body>
+</html>

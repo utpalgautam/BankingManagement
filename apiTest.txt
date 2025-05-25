@@ -1,0 +1,115 @@
+Deposit
+{
+  "account_number": "1234567890",
+  "amount": 5000,
+  "transaction_method": "cash",
+  "description": "Cash deposit"
+}
+
+Withdraw
+{
+  "account_number": "1234567890",
+  "amount": 2000,
+  "transaction_method": "cash",
+  "description": "ATM Withdrawal"
+}
+
+Register
+{
+    "username": "utpalgautam",
+    "password": "utpal1234",
+    "full_name": "Utpal Gautam",
+    "role": "customer",
+    "branch_id": "BR001",
+    "date_of_birth": "2003-08-15T00:00:00.000Z",
+    "mobile_no": "9911192281",
+    "email": "utpalgautam4@gmail.com",
+    "address": {
+        "street": "123 MG Road",
+        "city": "Pune",
+        "state": "Maharashtra",
+        "zipCode": "411001",
+        "country": "India"
+    },
+    "aadhar_number": "123456789012",
+    "PAN_number": "ABCDE1234F"
+}
+
+Account create
+{
+    "account_type": "savings",
+    "balance": 5000,
+    "interest_rate": 3.5,
+    "status": "active"
+}
+
+
+loan create
+first create account
+
+{
+  "loan_type": "home loan",
+  "amount": 500000,
+  "interest_rate": 7.5,
+  "term_months": 120,
+  "collateral": {
+    "type": "property",
+    "estimated_value": 700000,
+    "description": "3BHK Apartment in Bangalore"
+  }
+}
+
+approve 
+{
+  "approved_by": "admin123"
+}
+
+
+transfer
+{
+"account_number":"", 
+"recipient_account_number":"", 
+"amount":"", 
+"transaction_method":"", 
+"description":"
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+},
+                    body: JSON.stringify(accountData),
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    alert(`Account opened successfully! Account Number: ${result.account_number}`);
+                    event.target.reset();
+                } else {
+                    alert('Failed to open account. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while opening the account.');
+            }
+        }
+
+        // Load dashboard by default
+        showSection('dashboard');
+    </script>
+
+</body>
+</html>
+
+
+
+
